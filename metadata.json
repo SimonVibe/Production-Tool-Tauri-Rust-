@@ -1,0 +1,11 @@
+{
+  "name": "CFS Outil Update (Tauri+Rust) Optimisé",
+  "description": "Interface utilitaire OPEQ pour tests et configuration matérielle.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

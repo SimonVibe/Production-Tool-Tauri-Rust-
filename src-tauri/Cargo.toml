@@ -1,0 +1,17 @@
+[package]
+name = "outil-update"
+version = "1.2.40"
+description = "Interface utilitaire OPEQ pour tests et configuration matérielle (Tauri + Rust)"
+authors = ["OPEQ"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+tauri-plugin-dialog = "2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+winreg = "0.52"

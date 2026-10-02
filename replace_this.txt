@@ -1,0 +1,196 @@
+#[tauri::command]
+fn check_security_status() -> SecurityStatusResult {
+    #[cfg(target_os = "windows")]
+    {
+        let ps_cmd = r#"
+            $ProgressPreference = 'SilentlyContinue'
+            $WarningPreference = 'SilentlyContinue'
+            $ErrorActionPreference = 'SilentlyContinue'
+            $tpmOk = $false
+            $sb = $false
+
+            # --- 1. DETECTION TPM 2.0 / 1.2 (Multi-méthodes prioritaires) ---
+            # A. Get-Tpm Cmdlet
+            try {
+                $t = Get-Tpm -ErrorAction SilentlyContinue
+                if ($t -and ($t.TpmPresent -or $t.TpmReady -or $t.TpmEnabled -or $t.TpmActivated -or $null -ne $t.ManufacturerId)) {
+                    $tpmOk = $true
+                }
+            } catch {}
+
+            # B. tpmtool.exe (Utilitaire natif Windows sans besoin de droits WMI élevés)
+            if (-not $tpmOk) {
+                try {
+                    $ttool = & tpmtool.exe getdeviceinformation 2>$null
+                    if ($ttool -match 'TPM Present:\s*True|TPM Ready:\s*True|TPM Version:\s*2\.0|TPM Version:\s*1\.2') {
+                        $tpmOk = $true
+                    }
+                } catch {}
+            }
+
+            # C. WMI root/cimv2/Security/MicrosoftTpm (Win32_Tpm)
+            if (-not $tpmOk) {
+                try {
+                    $tpmWmi = Get-CimInstance -Namespace 'root/cimv2/Security/MicrosoftTpm' -ClassName Win32_Tpm -ErrorAction SilentlyContinue
+                    if ($tpmWmi -and ($tpmWmi.IsActivated_InitialValue -or $tpmWmi.IsEnabled_InitialValue -or $tpmWmi.SpecVersion -or $null -ne $tpmWmi.ManufacturerId)) {
+                        $tpmOk = $true
+                    }
+                } catch {}
+            }
+
+            # D. Device Manager (Win32_PnPEntity / PnP Devices)
+            if (-not $tpmOk) {
+                try {
+                    $secPnp = Get-CimInstance Win32_PnPEntity -ErrorAction SilentlyContinue | Where-Object {
+                        $_.PNPClass -eq 'SecurityDevices' -or 
+                        $_.ClassGuid -eq '{d94ee5d8-d18d-4444-9981-1f1c3f6b18d0}' -or 
+                        $_.Service -eq 'TPM' -or 
+                        $_.DeviceID -match 'MSFT0101|PNP0C31|IFX0102|AMD0020|AMDIF030|INTC0102' -or 
+                        $_.Name -match 'TPM|Trusted Platform|Plateforme|AMD PSP|Pluton|Security Device'
+                    }
+                    if ($secPnp) { $tpmOk = $true }
+                } catch {}
+            }
+
+            # E. Registre Windows (Pilote & Services TPM / TBS)
+            if (-not $tpmOk) {
+                try {
+                    if (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TPM') {
+                        $tpmSvc = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TPM' -ErrorAction SilentlyContinue
+                        if ($tpmSvc -and $tpmSvc.Start -ne 4) { $tpmOk = $true }
+                    }
+                    if (-not $tpmOk -and (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TBS')) {
+                        $tbsSvc = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TBS' -ErrorAction SilentlyContinue
+                        if ($tbsSvc -and $tbsSvc.Start -ne 4) { $tpmOk = $true }
+                    }
+                } catch {}
+            }
+
+            # --- 2. DETECTION SECURE BOOT (Multi-méthodes) ---
+            # A. Registre UEFISecureBootEnabled (Standard Windows)
+            try {
+                $sbVal = (Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\SecureBoot\State' -Name 'UEFISecureBootEnabled' -ErrorAction SilentlyContinue).UEFISecureBootEnabled
+                if ($sbVal -eq 1) { $sb = $true }
+            } catch {}
+
+            # B. Confirm-SecureBootUEFI cmdlet
+            if (-not $sb) {
+                try {
+                    $sbCmd = Confirm-SecureBootUEFI -ErrorAction Stop
+                    if ($sbCmd -eq $true) { $sb = $true }
+                } catch {}
+            }
+
+            # C. DeviceGuard WMI
+            if (-not $sb) {
+                try {
+                    $dg = Get-CimInstance -Namespace root\Microsoft\Windows\DeviceGuard -ClassName Win32_DeviceGuard -ErrorAction SilentlyContinue
+                    if ($dg -and ($dg.SecurityServicesConfigured -contains 1 -or $dg.SecurityServicesRunning -contains 1)) {
+                        $sb = $true
+                    }
+                } catch {}
+            }
+
+            # --- 3. DETECTION DU MODE DE DEMARRAGE HDD (UEFI vs Legacy) ---
+            $peFirmware = $null
+            try {
+                $peFirmware = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control' -Name 'PEFirmwareType' -ErrorAction SilentlyContinue).PEFirmwareType
+            } catch {}
+
+            $envFw = $env:firmware_type
+
+            $partitionStyle = "GPT"
+            try {
+                $bootDisk = Get-Disk | Where-Object { $_.IsSystem -eq $true -or $_.IsBoot -eq $true } -ErrorAction SilentlyContinue | Select-Object -First 1
+                if (-not $bootDisk) {
+                    $bootDisk = Get-Disk -Number 0 -ErrorAction SilentlyContinue
+                }
+                if ($bootDisk -and $bootDisk.PartitionStyle) {
+                    $partitionStyle = $bootDisk.PartitionStyle.ToString()
+                }
+            } catch {}
+
+            $hasUefiSupport = $false
+            try {
+                $null = Confirm-SecureBootUEFI -ErrorAction Stop
+                $hasUefiSupport = $true
+            } catch {
+                if ($_.Exception.Message -notmatch 'not supported|non pris en charge') {
+                    $hasUefiSupport = $true
+                }
+            }
+
+            # Détermination booléenne UEFI
+            $isUefi = $true
+            if ($peFirmware -eq 1 -or $envFw -eq 'Legacy' -or $partitionStyle -eq 'MBR') {
+                if ($sb -eq $false -and -not $hasUefiSupport -and $peFirmware -ne 2) {
+                    $isUefi = $false
+                }
+            }
+
+            if ($peFirmware -eq 2 -or $envFw -eq 'UEFI' -or $partitionStyle -eq 'GPT' -or $sb -eq $true -or $hasUefiSupport -or (Test-Path 'HKLM:\System\CurrentControlSet\Control\SecureBoot')) {
+                $isUefi = $true
+            }
+
+            $bootMode = if ($isUefi) { "UEFI" } else { "Legacy" }
+
+            @{ tpm = $tpmOk; secureBoot = $sb; isUefi = $isUefi; bootMode = $bootMode; partitionStyle = $partitionStyle } | ConvertTo-Json -Compress
+        "#;
+        let mut cmd = Command::new("powershell");
+        cmd.creation_flags(CREATE_NO_WINDOW).args(["-NoProfile", "-NonInteractive", "-NoLogo", "-ExecutionPolicy", "Bypass", "-Command", ps_cmd]);
+        
+        match cmd.output() {
+            Ok(out) => {
+                let stdout_str = String::from_utf8_lossy(&out.stdout).trim().to_string();
+                
+                // Extract JSON block in case PowerShell printed other warnings/text before it
+                let json_str = if let (Some(start), Some(end)) = (stdout_str.find('{'), stdout_str.rfind('}')) {
+                    if start <= end {
+                        &stdout_str[start..=end]
+                    } else {
+                        &stdout_str
+                    }
+                } else {
+                    &stdout_str
+                };
+
+                if let Ok(val) = serde_json::from_str::<serde_json::Value>(json_str) {
+                    let tpm = val.get("tpm").and_then(|v| v.as_bool()).unwrap_or(false);
+                    let secure_boot = val.get("secureBoot").and_then(|v| v.as_bool()).unwrap_or(false);
+                    let is_uefi = val.get("isUefi").and_then(|v| v.as_bool());
+                    let boot_mode = val.get("bootMode").and_then(|v| v.as_str()).map(|s| s.to_string());
+                    let partition_style = val.get("partitionStyle").and_then(|v| v.as_str()).map(|s| s.to_string());
+
+                    return SecurityStatusResult {
+                        tpm,
+                        secure_boot,
+                        is_uefi: is_uefi.or(Some(true)),
+                        boot_mode: boot_mode.or(Some("UEFI".into())),
+                        partition_style: partition_style.or(Some("GPT".into())),
+                        error: None,
+                    };
+                }
+                SecurityStatusResult {
+                    tpm: false,
+                    secure_boot: false,
+                    is_uefi: Some(true),
+                    boot_mode: Some("UEFI".into()),
+                    partition_style: Some("GPT".into()),
+                    error: Some("Format de réponse invalide".into()),
+                }
+            }
+            Err(e) => SecurityStatusResult {
+                tpm: false,
+                secure_boot: false,
+                is_uefi: Some(true),
+                boot_mode: Some("UEFI".into()),
+                partition_style: Some("GPT".into()),
+                error: Some(e.to_string()),
+            },
+        }
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        SecurityStatusResult {
+            tpm: true,

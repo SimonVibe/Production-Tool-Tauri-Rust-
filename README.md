@@ -1,11 +1,34 @@
-<div align="center">
+# Outil Update OPEQ
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+Application utilitaire pour les tests et la configuration matérielle, conçue pour être compilée en exécutable portable (.exe).
 
-  <h1>Built with AI Studio</h2>
+## Prérequis
+- [Node.js](https://nodejs.org/) (Version 18 ou supérieure recommandée)
+- npm (généralement inclus avec Node.js)
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## Installation des dépendances
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+Avant de pouvoir lancer ou compiler l'application, vous devez installer les modules requis.
+Ouvrez un terminal (ou l'invite de commande) dans le dossier du projet et exécutez :
 
-</div>
+```bash
+npm install
+```
+
+## Compilation (Création de l'exécutable .exe)
+
+Pour générer le fichier exécutable `.exe` portable qui peut être lancé depuis une clé USB ou un répertoire réseau, exécutez la commande suivante :
+
+```bash
+npm run electron:build
+```
+
+Une fois la compilation terminée, l'exécutable final se trouvera dans le dossier `dist-electron`. Vous pourrez le copier sur votre clé USB ou votre réseau.
+
+## Développement et tests
+
+Pour lancer l'application en mode développement afin de tester des modifications (avec rechargement à chaud) :
+
+```bash
+npm run electron:dev
+```
