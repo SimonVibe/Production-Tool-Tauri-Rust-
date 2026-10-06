@@ -11,6 +11,9 @@ This file keeps track of all major changes made to the **Hardware Diagnostic & U
   * Replaced hardcoded `"Chargement..."` fallback in `App.tsx` `<Suspense fallback="...">` with dynamic `t('common.loading')` so the Settings modal and other lazy-loaded views render `"Loading..."` when the active language is English.
   * Enhanced `getSysValue` and `SpecRow` in `Dashboard.tsx` to automatically localize hardware discovery placeholders (`"Loading..."` in English, `"Chargement..."` in French).
   * Updated copy buttons, SMART badges, and model detectors to support multilingual loading indicators seamlessly.
+* **Documentation & Operations Manual Synchronization (`README.md`, `USER_GUIDE.md`)**:
+  * Synchronized all build artifact directories, filenames, titles, and paths to reflect `Production-Tool` and the structured `/dist/1_portable/` and `/dist/2_installer/` output targets.
+  * Added Google AI Studio attribution badge and acknowledgement in `README.md`.
 
 ---
 

@@ -1,17 +1,16 @@
-# Hardware Diagnostic & Update Tool
+# Production-Tool — Hardware Diagnostic & Configuration Suite
 
 [![Tauri v2](https://img.shields.io/badge/Tauri-v2-blue.svg?logo=tauri)](https://tauri.app/)
 [![Rust](https://img.shields.io/badge/Rust-1.75+-orange.svg?logo=rust)](https://www.rust-lang.org/)
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178c6.svg?logo=typescript)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-6-646cff.svg?logo=vite)](https://vitejs.dev/)
-[![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8.svg?logo=tailwindcss)](https://tailwindcss.com/)
+[![Built with Google AI Studio](https://img.shields.io/badge/Built%20with-Google%20AI%20Studio-4285F4.svg?logo=google)](https://aistudio.google.com/)
 [![Windows 10 / 11](https://img.shields.io/badge/Platform-Windows_10_%2F_11_(x64)-0078d4.svg?logo=windows)](https://microsoft.com/windows)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](#)
 
 A high-performance, native hardware diagnostic, configuration, and driver deployment utility engineered for computer workshop technicians, IT refurbishing lines, and system maintenance.
 
-Built on **Tauri v2 (Rust + WebView2)** and **React 19**, the application compiles into both an ultra-lightweight **standalone Portable executable** (ready to run instantly from USB flash drives or network shares with zero installation) and an **official Windows Installer (`.exe`)**.
+Developed with **Google AI Studio** and built on **Tauri v2 (Rust + WebView2)** and **React 19**, the application compiles into both an ultra-lightweight **standalone Portable executable** (`dist/1_portable/Production-Tool_v{version}_Portable.exe`) and **official Windows Installers** (`dist/2_installer/Production-Tool_v{version}_Installer.exe` / `.msi`).
 
 ---
 
@@ -196,6 +195,9 @@ The resulting executables will be compiled and organized by `post-build.js` into
 ## Project Structure
 
 ```
+├── dist/
+│   ├── 1_portable/             # Standalone portable binaries (Production-Tool_v{version}_Portable.exe)
+│   └── 2_installer/            # Official Windows setup installers (.exe and .msi)
 ├── run.bat                     # All-in-one UAC elevation, prerequisite installer & build script
 ├── sync-version.js             # Automated version synchronizer from changelog.md
 ├── post-build.js               # Post-build packaging script for Portable & Installer binaries
@@ -281,6 +283,12 @@ The tool persists settings inside `config.json` (stored alongside the executable
 ## Contributing & Changelog
 
 All notable updates and releases are meticulously documented in [changelog.md](changelog.md). When introducing changes, update the version in `changelog.md` and run `node sync-version.js` to propagate the version across `package.json`, `tauri.conf.json`, and `Cargo.toml`.
+
+---
+
+## Acknowledgements
+
+This application was developed with **Google AI Studio**.
 
 ---
 

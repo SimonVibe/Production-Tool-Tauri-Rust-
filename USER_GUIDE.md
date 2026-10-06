@@ -1,6 +1,6 @@
-# Hardware Diagnostic & Update Tool — User Guide & Operations Manual
+# Production-Tool — User Guide & Operations Manual
 
-Welcome to the **Hardware Diagnostic & Update Tool** operational manual. This guide is designed for workshop technicians, IT system administrators, and refurbishment specialists to effectively diagnose hardware, audit Windows 11 readiness, deploy drivers, flash firmware, and run comprehensive component tests.
+Welcome to the **Production-Tool** operational manual. This guide is designed for workshop technicians, IT system administrators, and refurbishment specialists to effectively diagnose hardware, audit Windows 11 readiness, deploy drivers, flash firmware, and run comprehensive component tests.
 
 ---
 
@@ -43,9 +43,9 @@ For technicians setting up fresh workshop machines or building from source:
    - Verifies the MSVC C++ Build Tools environment.
    - Synchronizes version numbers from `changelog.md`.
    - Runs `npm install` and generates app icons.
-   - Builds both the **Portable Executable** and the **Windows Installer**.
+   - Builds both the **Portable Executable** (placed in `dist/1_portable/`) and the **Windows Installers** (placed in `dist/2_installer/`).
 
-### C. Web Browser Simulator Mode
+### D. Web Browser Simulator Mode
 To test the interface in a standard browser without native Windows APIs:
 ```bash
 npm run dev
@@ -323,8 +323,8 @@ Master these hotkeys to accelerate computer processing on the production line:
 > **Solution**: Laptop ACPI controllers often report unstable instantaneous readings. The application automatically applies a **5-second rolling moving average** to smooth out fluctuations. Allow the battery card 5 seconds to calibrate.
 
 ### Q5: How do I deploy this tool to dozens of USB flash drives?
-> **Solution**: Run `run.bat` to generate the portable executable (`Hardware-Diagnostic-Tool_v{version}_Portable.exe`). Copy this `.exe` and your pre-configured `config.json` to the root of your USB drives. It runs with zero dependencies on any 64-bit Windows 10/11 system.
+> **Solution**: Run `run.bat` to generate the portable executable (`Production-Tool_v{version}_Portable.exe` in `dist/1_portable/`). Copy this `.exe` and your pre-configured `config.json` to the root of your USB drives. It runs with zero dependencies on any 64-bit Windows 10/11 system.
 
 ---
 
-*Hardware Diagnostic & Update Tool • Operations Manual v1.2.41*
+*Production-Tool • Hardware Diagnostic & Configuration Suite • Operations Manual v1.2.48*
