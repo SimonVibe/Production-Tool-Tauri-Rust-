@@ -480,7 +480,7 @@ export default function Dashboard({
           <div className="hidden md:flex flex-col">
             <div className="flex items-center space-x-1.5">
               <span className="text-sm font-bold text-zinc-100 tracking-tight">Hardware Diagnostic & Update Tool</span>
-              <span className="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 border border-zinc-700/60">v1.2.44</span>
+              <span className="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 border border-zinc-700/60">v1.2.46</span>
             </div>
             <span className="text-[10px] text-zinc-400 font-medium">{language === 'en' ? 'Diagnostics, Drivers & Configuration Suite' : 'Suite de Diagnostic, Pilotes & Configuration'}</span>
           </div>

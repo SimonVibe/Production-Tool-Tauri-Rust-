@@ -4,6 +4,29 @@ This file keeps track of all major changes made to the **Hardware Diagnostic & U
 
 ---
 
+## [2026-10-06] - Version 1.2.46: English Localization for Build & Packaging Scripts
+
+### [Changed]
+* **Build Script Localization (`run.bat`, `post-build.js`, `sync-version.js`)**:
+  * Fully translated `run.bat` command output, step notifications, prerequisite alerts, UAC elevation messages, and build summaries into English.
+  * Translated all build pipeline logs in `sync-version.js` and `post-build.js` into English.
+
+---
+
+## [2026-10-06] - Version 1.2.45: Build System Rebranding to Production-Tool & Structured Dist Folders
+
+### [Changed]
+* **Application Compilation Rebranding (`Production-Tool`)**:
+  * Renamed the compilation product name to `Production-Tool` across Tauri configuration (`src-tauri/tauri.conf.json`), Rust crate package (`src-tauri/Cargo.toml`), and npm package (`package.json`).
+  * Updated `sync-version.js` to ensure subsequent automated builds maintain the `Production-Tool` executable naming scheme and window title.
+* **Structured Artifact Output Directories (`/dist/1_portable/` & `/dist/2_installer/`)**:
+  * Updated `post-build.js` and `run.bat` to automatically organize build deliverables:
+    * **Portable Executables**: Saved directly into `dist/1_portable/` (`Production-Tool_v{version}_Portable.exe` and `Production-Tool.exe`).
+    * **Windows Installers**: Saved directly into `dist/2_installer/` (`Production-Tool_v{version}_Installer.exe` NSIS setup and `Production-Tool_v{version}_Installer.msi` WiX package).
+  * Enhanced `run.bat` packaging script with updated paths, informative banners, and automatic folder scaffolding.
+
+---
+
 ## [2026-10-06] - Version 1.2.44: Configurable Default Starting Language
 
 ### [Added]

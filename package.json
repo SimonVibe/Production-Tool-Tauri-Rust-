@@ -1,7 +1,7 @@
 {
-  "name": "hardware-diagnostic-tool",
+  "name": "production-tool",
   "private": true,
-  "version": "1.2.44",
+  "version": "1.2.46",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",

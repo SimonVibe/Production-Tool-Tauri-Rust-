@@ -115,10 +115,10 @@ run.bat
 4. **Dependency Installation**: Runs `npm install` cleanly.
 5. **Icon Generation**: Generates native Windows `.ico`, macOS `.icns`, and multi-resolution PNG icons from `app-icon.png`.
 6. **Frontend Compilation**: Builds the React 19 / Vite bundle into `/dist`.
-7. **Native Tauri Compilation & Packaging**:
-   - Generates the **Portable Executable**: `Hardware-Diagnostic-Tool_v{version}_Portable.exe`
-   - Generates the **Official Windows Installer**: `Hardware-Diagnostic-Tool_v{version}_Installer.exe`
-   - Copies both final binaries directly to the project root.
+7. **Native Tauri Compilation & Packaging (`Production-Tool`)**:
+   - Generates the **Portable Executable**: `dist/1_portable/Production-Tool_v{version}_Portable.exe`
+   - Generates the **Windows Installers** (.exe & .msi): `dist/2_installer/Production-Tool_v{version}_Installer.exe` and `.msi`
+   - Automatically organizes both distribution packages into their respective subfolders in `dist/`.
 
 ---
 
@@ -169,7 +169,7 @@ Synchronize version information, build the frontend, and compile the native Wind
 npm run tauri:build
 ```
 
-The resulting executables will be generated in `src-tauri/target/release/bundle/` and copied to the root directory by `post-build.js`.
+The resulting executables will be compiled and organized by `post-build.js` into `dist/1_portable/` and `dist/2_installer/`.
 
 ---
 

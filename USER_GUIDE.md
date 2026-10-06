@@ -28,11 +28,14 @@ Welcome to the **Hardware Diagnostic & Update Tool** operational manual. This gu
 The application is distributed in multiple convenient formats depending on your workshop environment:
 
 ### A. Standalone Portable Executable (`.exe`)
-- **No installation required**: Copy `Hardware-Diagnostic-Tool_v{version}_Portable.exe` to a USB flash drive or network share.
+- **No installation required**: Copy `Production-Tool_v{version}_Portable.exe` (found in `/dist/1_portable/`) to a USB flash drive or network share.
 - **Direct execution**: Double-click the `.exe`. The application automatically requests UAC Administrator privileges when launched.
 - **Portability**: All settings are automatically loaded from and saved to a local `config.json` next to the executable.
 
-### B. One-Click Setup & Build Script (`run.bat`)
+### B. Windows Setup Installers (`.exe` / `.msi`)
+- Located in `/dist/2_installer/` (`Production-Tool_v{version}_Installer.exe` and `Production-Tool_v{version}_Installer.msi`).
+
+### C. One-Click Setup & Build Script (`run.bat`)
 For technicians setting up fresh workshop machines or building from source:
 1. Right-click `run.bat` in the project root and select **Run as administrator**.
 2. `run.bat` automatically:

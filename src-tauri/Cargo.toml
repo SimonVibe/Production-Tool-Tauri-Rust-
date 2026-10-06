@@ -1,7 +1,7 @@
 [package]
-name = "outil-update"
-version = "1.2.44"
-description = "Hardware diagnostic and configuration utility (Tauri + Rust)"
+name = "production-tool"
+version = "1.2.46"
+description = "Production Tool - Hardware diagnostic and configuration utility (Tauri + Rust)"
 authors = ["Hardware Workshop"]
 edition = "2021"
 

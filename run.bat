@@ -1,52 +1,52 @@
 @echo off
 setlocal EnableDelayedExpansion
-title Hardware Diagnostic & Update Tool (Mode Administrateur) - Build & Packaging
+title Production-Tool (Administrator Mode) - Build & Packaging
 
 :: =======================================================
-:: 0. Verification des privileges Administrateur et auto-elevation
+:: 0. Administrator privilege check & auto-elevation
 :: =======================================================
 net session >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo =======================================================
-    echo   [UAC] Elevation requise pour le diagnostic materiel
-    echo   Relance automatique en mode Administrateur...
+    echo   [UAC] Administrator privileges required for native build
+    echo   Relaunching automatically in Administrator mode...
     echo =======================================================
     powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd -ArgumentList '/c \"\"%~f0\"\"' -Verb RunAs"
     exit /b
 )
 
 echo =======================================================
-echo   Hardware Diagnostic Tool - Script de Construction (Tauri v2 + React)
-echo   Generateur d'Installeur et Application Portable
-echo   [MODE ADMINISTRATEUR ACTIF]
+echo   Production-Tool - Build & Packaging Pipeline (Tauri v2 + React)
+echo   Portable Executable & Installer Generator (.exe / .msi)
+echo   [ADMINISTRATOR MODE ACTIVE]
 echo =======================================================
 echo.
 
-:: 1. Se positionner dans le dossier du script
-echo [1/7] Positionnement dans le repertoire du projet...
+:: 1. Navigate to script directory
+echo [1/7] Setting working directory to project root...
 cd /d "%~dp0"
 
 :: =======================================================
-:: 2. Verification et installation des prerequis systeme
+:: 2. Check and install system prerequisites
 :: =======================================================
-echo [2/7] Verification des prerequis systeme (Node.js, Rust, C++ Build Tools)...
+echo [2/7] Verifying system prerequisites (Node.js, Rust, C++ Build Tools)...
 
-:: 2.1 Verification / Installation de Node.js
+:: 2.1 Check / Install Node.js
 where node >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
-    echo [Prerequis] Node.js non detecte. Tentative d'installation automatique via winget...
+    echo [Prerequisites] Node.js not detected. Attempting automatic installation via winget...
     where winget >nul 2>&1
     if %ERRORLEVEL% EQU 0 (
         winget install OpenJS.NodeJS.LTS -e --silent --accept-source-agreements --accept-package-agreements
         set "PATH=%ProgramFiles%\nodejs;%APPDATA%\npm;!PATH!"
     ) else (
-        echo [ERREUR] Node.js est requis. Veuillez l'installer depuis https://nodejs.org/
+        echo [ERROR] Node.js is required. Please install it from https://nodejs.org/
         pause
         exit /b 1
     )
 )
 
-:: 2.2 Verification / Installation de Rust & Cargo
+:: 2.2 Check / Install Rust & Cargo
 if exist "%USERPROFILE%\.cargo\bin" (
     set "PATH=%USERPROFILE%\.cargo\bin;!PATH!"
 )
@@ -56,13 +56,13 @@ if exist "%LOCALAPPDATA%\Programs\Rust\bin" (
 
 where cargo >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
-    echo [Prerequis] Cargo/Rust non detecte. Tentative d'installation automatique via winget / rustup...
+    echo [Prerequisites] Cargo/Rust not detected. Attempting automatic installation via winget / rustup...
     where winget >nul 2>&1
     if %ERRORLEVEL% EQU 0 (
         winget install Rustlang.Rustup -e --silent --accept-source-agreements --accept-package-agreements
         set "PATH=%USERPROFILE%\.cargo\bin;!PATH!"
     ) else (
-        echo [Prerequis] Telechargement de rustup-init.exe...
+        echo [Prerequisites] Downloading rustup-init.exe...
         powershell -Command "Invoke-WebRequest -Uri 'https://win.rustup.rs/x86_64' -OutFile '%TEMP%\rustup-init.exe'"
         if exist "%TEMP%\rustup-init.exe" (
             "%TEMP%\rustup-init.exe" -y --default-host x86_64-pc-windows-msvc
@@ -73,69 +73,70 @@ if %ERRORLEVEL% NEQ 0 (
 
 where cargo >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
-    echo [ATTENTION] 'cargo' n'a pas pu etre verifie dans le PATH courant.
-    echo Si Rust vient d'etre installe, veuillez rouvrir un terminal ou verifier %%USERPROFILE%%\.cargo\bin.
+    echo [WARNING] 'cargo' could not be found in the current PATH.
+    echo If Rust was just installed, please reopen a terminal or verify %%USERPROFILE%%\.cargo\bin.
 )
 
 :: =======================================================
-:: 3. Synchronisation dynamique de version depuis changelog.md
+:: 3. Dynamic version synchronization from changelog.md
 :: =======================================================
-echo [3/7] Synchronisation de la version depuis changelog.md...
+echo [3/7] Synchronizing version from changelog.md...
 call node sync-version.js
 
 :: =======================================================
-:: 4. Installation des modules Node.js
+:: 4. Install Node.js dependencies
 :: =======================================================
-echo [4/7] Verification et installation des modules Node.js (npm install)...
+echo [4/7] Checking and installing Node.js dependencies (npm install)...
 call npm install
 if %ERRORLEVEL% NEQ 0 (
-    echo [ERREUR] L'installation des dependances npm a echoue.
+    echo [ERROR] Failed to install npm dependencies.
     pause
     exit /b %ERRORLEVEL%
 )
 
 :: =======================================================
-:: 5. Generation et verification des icones d'application
+:: 5. Generate and verify application icons
 :: =======================================================
-echo [5/7] Verification et generation des icones d'application...
+echo [5/7] Verifying and generating application icons...
 if not exist "src-tauri\icons\icon.ico" (
     if exist "app-icon.png" (
-        echo [Icones] Creation automatique des icones depuis app-icon.png...
+        echo [Icons] Automatically generating icons from app-icon.png...
         call npx @tauri-apps/cli icon app-icon.png
     )
 ) else (
-    echo [Icones] Les icones Windows/Mac/Linux sont deja presentes dans src-tauri\icons.
+    echo [Icons] Windows/Mac/Linux icons are already present in src-tauri\icons.
 )
 
 :: =======================================================
-:: 6. Compilation du frontend React (Vite)
+:: 6. Compile React frontend (Vite)
 :: =======================================================
-echo [6/7] Compilation du frontend Web (React + Vite)...
+echo [6/7] Compiling web frontend (React + Vite)...
 call npm run build
 if %ERRORLEVEL% NEQ 0 (
-    echo [ERREUR] La compilation React a echoue.
+    echo [ERROR] React compilation failed.
     pause
     exit /b %ERRORLEVEL%
 )
 
 :: =======================================================
-:: 7. Construction du binaire natif, installeur et version portable (Tauri)
+:: 7. Build native Tauri application, installers & portable app
 :: =======================================================
-echo [7/7] Construction de l'application native Tauri (Portable & Installeur)...
+echo [7/7] Compiling native Tauri application (Portable & Installers)...
 call npx @tauri-apps/cli build
 
 if %ERRORLEVEL% EQU 0 (
     call node post-build.js
     echo =======================================================
-    echo   [SUCCES] L'application Tauri a ete generee avec succes !
-    echo   Retrouvez a la racine du projet :
-    echo     1. L'application Portable : Hardware-Diagnostic-Tool_v..._Portable.exe
-    echo     2. L'installeur Windows   : Hardware-Diagnostic-Tool_v..._Installer.exe
+    echo   [SUCCESS] Production-Tool compiled and packaged successfully!
+    echo   Deliverables ready in the dist folder:
+    echo     1. Portable Application: dist\1_portable\Production-Tool_v..._Portable.exe
+    echo     2. Setup Installer (.exe): dist\2_installer\Production-Tool_v..._Installer.exe
+    echo     3. MSI Installer (.msi):   dist\2_installer\Production-Tool_v..._Installer.msi
     echo =======================================================
 ) else (
     echo.
-    echo [ERREUR] La compilation Tauri / Rust a rencontre une erreur.
-    echo Assurez-vous d'avoir installe les C++ Build Tools (Visual Studio / MSVC).
+    echo [ERROR] Tauri / Rust compilation encountered an error.
+    echo Please make sure Visual Studio C++ Build Tools (MSVC) are installed.
 )
 
 echo.
