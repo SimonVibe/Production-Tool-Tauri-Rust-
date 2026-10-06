@@ -11,7 +11,7 @@ if %ERRORLEVEL% NEQ 0 (
     echo   [UAC] Administrator privileges required for native build
     echo   Relaunching automatically in Administrator mode...
     echo =======================================================
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd -ArgumentList '/c \"\"%~f0\"\"' -Verb RunAs"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd -ArgumentList '/k \"\"%~f0\"\"' -Verb RunAs"
     exit /b
 )
 
@@ -123,9 +123,14 @@ if %ERRORLEVEL% NEQ 0 (
 :: =======================================================
 echo [7/7] Compiling native Tauri application (Portable & Installers)...
 call npx @tauri-apps/cli build
+set "TAURI_BUILD_CODE=%ERRORLEVEL%"
 
-if %ERRORLEVEL% EQU 0 (
-    call node post-build.js
+echo.
+echo [Artifacts] Organizing build deliverables into dist\1_portable\ and dist\2_installer\...
+call node post-build.js
+
+echo.
+if %TAURI_BUILD_CODE% EQU 0 (
     echo =======================================================
     echo   [SUCCESS] Production-Tool compiled and packaged successfully!
     echo   Deliverables ready in the dist folder:
@@ -134,10 +139,13 @@ if %ERRORLEVEL% EQU 0 (
     echo     3. MSI Installer (.msi):   dist\2_installer\Production-Tool_v..._Installer.msi
     echo =======================================================
 ) else (
-    echo.
-    echo [ERROR] Tauri / Rust compilation encountered an error.
-    echo Please make sure Visual Studio C++ Build Tools (MSVC) are installed.
+    echo =======================================================
+    echo   [NOTICE] Tauri build process finished (exit code: %TAURI_BUILD_CODE%).
+    echo   If portable executable was produced, it has been placed in dist\1_portable\
+    echo   If installer generation required WiX or NSIS tools, check log above.
+    echo =======================================================
 )
 
 echo.
-pause
+echo Press any key to exit...
+pause >nul

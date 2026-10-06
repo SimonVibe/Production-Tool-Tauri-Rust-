@@ -31,7 +31,7 @@ const calculateIdealZoom = () => {
 };
 
 export default function App() {
-  const { setLanguage } = useLanguage();
+  const { setLanguage, t } = useLanguage();
   const [currentView, setCurrentView] = useState<'dashboard' | 'config'>('dashboard');
   const [config, setConfig] = useState<AppConfig>(defaultConfig);
   const [brightness, setBrightness] = useState(100);
@@ -259,7 +259,7 @@ export default function App() {
     >
       <div className="absolute inset-0 bg-zinc-950/70 pointer-events-none -z-10" />
       <div className="relative z-0">
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><span className="text-emerald-400 animate-pulse">Chargement...</span></div>}>
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><span className="text-emerald-400 animate-pulse">{t('common.loading')}</span></div>}>
           {currentView === 'dashboard' ? (
           <Dashboard 
             config={config} 

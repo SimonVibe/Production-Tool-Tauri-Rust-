@@ -261,11 +261,25 @@ export default function Dashboard({
   };
 
   // Structured System Information
+  const isNotReady = (s?: string | null) => !s || s === 'N/A' || s === 'Chargement...' || s === 'Loading...' || s === t('common.loading') || s === '...';
+
   const getSysValue = (possibleKeys: string[]) => {
     for (const k of possibleKeys) {
-      if (sysInfo[k] !== undefined && sysInfo[k] !== '') return sysInfo[k];
-      if (sysInfo[`${k} :`] !== undefined && sysInfo[`${k} :`] !== '') return sysInfo[`${k} :`];
-      if (sysInfo[`${k}:`] !== undefined && sysInfo[`${k}:`] !== '') return sysInfo[`${k}:`];
+      if (sysInfo[k] !== undefined && sysInfo[k] !== '') {
+        const v = sysInfo[k];
+        if (v === 'Chargement...' || v === 'Loading...') return t('common.loading');
+        return v;
+      }
+      if (sysInfo[`${k} :`] !== undefined && sysInfo[`${k} :`] !== '') {
+        const v = sysInfo[`${k} :`];
+        if (v === 'Chargement...' || v === 'Loading...') return t('common.loading');
+        return v;
+      }
+      if (sysInfo[`${k}:`] !== undefined && sysInfo[`${k}:`] !== '') {
+        const v = sysInfo[`${k}:`];
+        if (v === 'Chargement...' || v === 'Loading...') return t('common.loading');
+        return v;
+      }
     }
     return 'N/A';
   };
@@ -351,7 +365,7 @@ export default function Dashboard({
       return s;
     };
 
-    const diskSnsList = rawDiskSn !== 'N/A' && rawDiskSn !== 'Chargement...'
+    const diskSnsList = !isNotReady(rawDiskSn)
       ? Array.from(new Set(rawDiskSn.split(',').map(s => cleanDiskSerialClient(s)).filter(Boolean)))
       : [];
 
@@ -418,7 +432,7 @@ export default function Dashboard({
 
     const rawAsset = cleanSmbiosTagClient(getSysValue(['Asset Tag', 'assetTag']));
     const rawOem = getSysValue(['Ownership Tag', 'ownershipTag', 'oemString']);
-    const cleanedOemList = rawOem !== 'N/A' && rawOem !== 'Chargement...' && rawOem !== 'Loading...'
+    const cleanedOemList = !isNotReady(rawOem)
       ? Array.from(new Set(rawOem.split(/[,;\n]+/).map(s => cleanSmbiosTagClient(s)).filter(Boolean)))
       : [];
 
@@ -480,7 +494,7 @@ export default function Dashboard({
           <div className="hidden md:flex flex-col">
             <div className="flex items-center space-x-1.5">
               <span className="text-sm font-bold text-zinc-100 tracking-tight">Hardware Diagnostic & Update Tool</span>
-              <span className="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 border border-zinc-700/60">v1.2.46</span>
+              <span className="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 border border-zinc-700/60">v1.2.48</span>
             </div>
             <span className="text-[10px] text-zinc-400 font-medium">{language === 'en' ? 'Diagnostics, Drivers & Configuration Suite' : 'Suite de Diagnostic, Pilotes & Configuration'}</span>
           </div>
@@ -714,7 +728,7 @@ export default function Dashboard({
                 <SpecRow 
                   label={t('specs.model')} 
                   value={parsedSpecs.model} 
-                  onCopy={parsedSpecs.model !== 'N/A' && parsedSpecs.model !== 'Chargement...' ? () => copyToClipboard(t('specs.model'), parsedSpecs.model) : undefined}
+                  onCopy={!isNotReady(parsedSpecs.model) ? () => copyToClipboard(t('specs.model'), parsedSpecs.model) : undefined}
                   isCopied={copiedKey === t('specs.model')}
                 />
               )}
@@ -725,7 +739,7 @@ export default function Dashboard({
                   value={parsedSpecs.serialNumber} 
                   isHighlight 
                   highlightColor="amber"
-                  onCopy={() => copyToClipboard(t('specs.serial_number'), parsedSpecs.serialNumber)}
+                  onCopy={!isNotReady(parsedSpecs.serialNumber) ? () => copyToClipboard(t('specs.serial_number'), parsedSpecs.serialNumber) : undefined}
                   isCopied={copiedKey === t('specs.serial_number')}
                 />
               )}
@@ -734,7 +748,7 @@ export default function Dashboard({
                 <SpecRow 
                   label={t('specs.uuid')} 
                   value={parsedSpecs.uuid} 
-                  onCopy={parsedSpecs.uuid !== 'N/A' && parsedSpecs.uuid !== 'Chargement...' ? () => copyToClipboard(t('specs.uuid'), parsedSpecs.uuid) : undefined}
+                  onCopy={!isNotReady(parsedSpecs.uuid) ? () => copyToClipboard(t('specs.uuid'), parsedSpecs.uuid) : undefined}
                   isCopied={copiedKey === t('specs.uuid')}
                 />
               )}
@@ -743,7 +757,7 @@ export default function Dashboard({
                 <SpecRow 
                   label={t('specs.asset_tag')} 
                   value={parsedSpecs.assetTag} 
-                  onCopy={parsedSpecs.assetTag !== 'N/A' && parsedSpecs.assetTag !== 'Chargement...' ? () => copyToClipboard(t('specs.asset_tag'), parsedSpecs.assetTag) : undefined}
+                  onCopy={!isNotReady(parsedSpecs.assetTag) ? () => copyToClipboard(t('specs.asset_tag'), parsedSpecs.assetTag) : undefined}
                   isCopied={copiedKey === t('specs.asset_tag')}
                 />
               )}
@@ -752,7 +766,7 @@ export default function Dashboard({
                 <SpecRow 
                   label={t('specs.ownership_tag')} 
                   value={parsedSpecs.ownershipTag} 
-                  onCopy={parsedSpecs.ownershipTag !== 'N/A' && parsedSpecs.ownershipTag !== 'Chargement...' ? () => copyToClipboard(t('specs.ownership_tag'), parsedSpecs.ownershipTag) : undefined}
+                  onCopy={!isNotReady(parsedSpecs.ownershipTag) ? () => copyToClipboard(t('specs.ownership_tag'), parsedSpecs.ownershipTag) : undefined}
                   isCopied={copiedKey === t('specs.ownership_tag')}
                 />
               )}
@@ -801,7 +815,7 @@ export default function Dashboard({
                     </div>
 
                     {/* Pastille SMART : Verte (Sain) / Orange (Attention) / Rouge (Critique) */}
-                    {parsedSpecs.disk !== 'Chargement...' && (
+                    {!isNotReady(parsedSpecs.disk) && (
                       <div 
                         className={`inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full border text-[10px] font-bold font-mono transition-all select-none cursor-help shrink-0 shadow-2xs ${
                           parsedSpecs.smartHealth.level === 'healthy'
@@ -879,7 +893,7 @@ export default function Dashboard({
                         <span className="text-xs font-mono font-semibold text-zinc-100 truncate text-right">
                           {parsedSpecs.rawDiskSn}
                         </span>
-                        {parsedSpecs.rawDiskSn !== 'Chargement...' && parsedSpecs.rawDiskSn !== 'N/A' && (
+                        {!isNotReady(parsedSpecs.rawDiskSn) && (
                           <button
                             onClick={() => copyToClipboard(t('specs.disk_sn'), parsedSpecs.rawDiskSn)}
                             className="text-zinc-500 hover:text-emerald-400 p-1 rounded transition-colors cursor-pointer shrink-0"
@@ -935,7 +949,7 @@ export default function Dashboard({
                     <kbd className="text-[9px] font-mono bg-zinc-950 px-1 py-0.2 rounded text-zinc-500 border border-zinc-800">F</kbd>
                   </div>
                   <div className="text-[11px] text-zinc-400 font-mono mt-0.5 truncate">
-                    {parsedSpecs.bios && parsedSpecs.bios !== 'Chargement...' && parsedSpecs.bios !== 'Loading...' && parsedSpecs.bios !== 'N/A'
+                    {!isNotReady(parsedSpecs.bios)
                       ? `BIOS : ${parsedSpecs.bios}`
                       : t('actions.bios_subtext')}
                   </div>
@@ -1442,11 +1456,12 @@ function SpecRow({
   isCopied?: boolean;
 }) {
   const { language, t } = useLanguage();
-  const isAvailable = value !== 'Chargement...' && value !== 'Loading...' && value !== 'N/A' && value !== '';
-  const displayValue = !isAvailable && value === 'N/A' 
+  const isLoading = value === 'Chargement...' || value === 'Loading...' || value === t('common.loading') || value === '...' || value === '';
+  const isAvailable = !isLoading && value !== 'N/A';
+  const displayValue = isLoading 
+    ? t('common.loading') 
+    : value === 'N/A' 
     ? t('common.not_specified') 
-    : (value === 'Chargement...' || value === 'Loading...')
-    ? t('common.loading')
     : value;
 
   return (

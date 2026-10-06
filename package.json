@@ -1,7 +1,7 @@
 {
   "name": "production-tool",
   "private": true,
-  "version": "1.2.46",
+  "version": "1.2.48",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",

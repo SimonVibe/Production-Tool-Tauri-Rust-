@@ -4,6 +4,28 @@ This file keeps track of all major changes made to the **Hardware Diagnostic & U
 
 ---
 
+## [2026-10-06] - Version 1.2.48: Complete Localization of Loading States
+
+### [Fixed]
+* **Dynamic Translation of Loading States (`App.tsx`, `Dashboard.tsx`, `NasDriversModal.tsx`)**:
+  * Replaced hardcoded `"Chargement..."` fallback in `App.tsx` `<Suspense fallback="...">` with dynamic `t('common.loading')` so the Settings modal and other lazy-loaded views render `"Loading..."` when the active language is English.
+  * Enhanced `getSysValue` and `SpecRow` in `Dashboard.tsx` to automatically localize hardware discovery placeholders (`"Loading..."` in English, `"Chargement..."` in French).
+  * Updated copy buttons, SMART badges, and model detectors to support multilingual loading indicators seamlessly.
+
+---
+
+## [2026-10-06] - Version 1.2.47: Resilient Build Window Persistence & Robust Dist Packaging
+
+### [Fixed]
+* **Build Console Auto-Close Fix (`run.bat`)**:
+  * Fixed an issue where the elevated PowerShell command window closed immediately upon script completion or errors by switching `Start-Process cmd` from `/c` to `/k` and ensuring the script always pauses before exiting.
+* **Guaranteed Artifact Copy to `/dist/1_portable/` and `/dist/2_installer/` (`post-build.js`, `run.bat`)**:
+  * Updated `run.bat` to unconditionally invoke `post-build.js` regardless of bundle warnings, ensuring any compiled binaries are moved.
+  * Added recursive bundle scanning in `post-build.js` for `.exe` (NSIS) and `.msi` (WiX) installers.
+  * Added self-copy collision prevention and fallback locator to guarantee portable and installer binaries are placed into `/dist/1_portable/` and `/dist/2_installer/`.
+
+---
+
 ## [2026-10-06] - Version 1.2.46: English Localization for Build & Packaging Scripts
 
 ### [Changed]

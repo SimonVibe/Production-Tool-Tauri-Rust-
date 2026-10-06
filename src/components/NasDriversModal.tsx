@@ -164,7 +164,7 @@ export default function NasDriversModal({
       const rawModel = (sysInfo?.['Modèle :'] || detectedModel || '').trim();
       const rawSn = (sysInfo?.['Numéro de série :'] || '').trim();
       
-      if (rawModel && rawModel !== 'Chargement...' && rawModel !== 'Inconnu') {
+      if (rawModel && rawModel !== 'Chargement...' && rawModel !== 'Loading...' && rawModel !== 'Inconnu' && rawModel !== 'Unknown') {
         let make = 'HP';
         const lower = rawModel.toLowerCase();
         if (lower.includes('hp') || lower.includes('probook') || lower.includes('elitebook') || lower.includes('zbook') || lower.includes('hewlett')) {
