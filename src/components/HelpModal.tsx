@@ -72,7 +72,7 @@ export default function HelpModal({
             <div>
               <div className="flex items-center space-x-2">
                 <h3 className="text-base font-bold text-white">
-                  {language === 'en' ? 'OPEQ User Guide & Procedures' : "Guide & Procédure d'Utilisation OPEQ"}
+                  {language === 'en' ? 'User Guide & Procedures' : "Guide & Procédure d'Utilisation"}
                 </h3>
               </div>
               <p className="text-xs text-zinc-400">
@@ -133,7 +133,7 @@ export default function HelpModal({
               <div>
                 <h4 className="text-base font-bold text-white flex items-center gap-2">
                   <BookOpen size={18} className="text-blue-400" />
-                  {language === 'en' ? 'Recommended Workflow for an OPEQ Computer' : 'Flux de Travail Recommandé pour un Ordinateur OPEQ'}
+                  {language === 'en' ? 'Recommended Workflow for Workshop Computer' : 'Flux de Travail Recommandé pour un Ordinateur en Atelier'}
                 </h4>
                 <p className="text-xs text-zinc-400 mt-1">
                   {language === 'en'
@@ -157,8 +157,8 @@ export default function HelpModal({
                   </h5>
                   <p className="text-xs text-zinc-400 leading-relaxed">
                     {language === 'en'
-                      ? <>Connect the Ethernet cable. Click the <strong className="text-white">OPEQ Network</strong> button in the top right to mount the NAS network share (<code className="text-cyan-400 font-mono">\\serveur-nas\Tech</code>).</>
-                      : <>Branchez le câble Ethernet. Cliquez sur le bouton <strong className="text-white">Réseau OPEQ</strong> en haut à droite pour monter le lecteur réseau NAS (<code className="text-cyan-400 font-mono">\\serveur-nas\Tech</code>).</>}
+                      ? <>Connect the Ethernet cable. Click the <strong className="text-white">NAS Network</strong> button in the top right to mount the network share (<code className="text-cyan-400 font-mono">\\serveur-nas\Tech</code>).</>
+                      : <>Branchez le câble Ethernet. Cliquez sur le bouton <strong className="text-white">Réseau NAS</strong> en haut à droite pour monter le lecteur réseau NAS (<code className="text-cyan-400 font-mono">\\serveur-nas\Tech</code>).</>}
                   </p>
                 </div>
 
@@ -558,7 +558,7 @@ export default function HelpModal({
               <div>
                 <h4 className="text-base font-bold text-white flex items-center gap-2">
                   <Server size={18} className="text-blue-400" />
-                  {language === 'en' ? 'Network Configuration & OPEQ NAS Shares' : 'Configuration Réseau & Partages NAS OPEQ'}
+                  {language === 'en' ? 'Network Configuration & NAS Shares' : 'Configuration Réseau & Partages NAS'}
                 </h4>
                 <p className="text-xs text-zinc-400 mt-1">
                   {language === 'en'
@@ -609,8 +609,8 @@ export default function HelpModal({
                   <p>
                     <strong className="text-zinc-200">{language === 'en' ? 'Authentication format:' : "Format d'authentification :"}</strong>{' '}
                     {language === 'en'
-                      ? <>If prompted, enter domain user as <code className="text-zinc-200 font-mono">opeq-qc\user</code> or <code className="text-zinc-200 font-mono">.\user</code>.</>
-                      : <>Si demandé, utilisez le compte de domaine sous la forme <code className="text-zinc-200 font-mono">opeq-qc\utilisateur</code> ou <code className="text-zinc-200 font-mono">.\utilisateur</code>.</>}
+                      ? <>If prompted, enter domain user as <code className="text-zinc-200 font-mono">workshop\user</code> or <code className="text-zinc-200 font-mono">.\user</code>.</>
+                      : <>Si demandé, utilisez le compte de domaine sous la forme <code className="text-zinc-200 font-mono">workshop\utilisateur</code> ou <code className="text-zinc-200 font-mono">.\utilisateur</code>.</>}
                   </p>
                   <p>
                     <strong className="text-zinc-200">{language === 'en' ? 'Custom configuration:' : 'Configuration personnalisée :'}</strong>{' '}
@@ -640,7 +640,7 @@ export default function HelpModal({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {[
-                  { key: 'H / F1', label: language === 'en' ? 'OPEQ Guide & Help' : 'Guide & Aide OPEQ', desc: language === 'en' ? 'Opens this complete technical guide' : 'Ouvre ce manuel technique complet' },
+                  { key: 'H / F1', label: language === 'en' ? 'Guide & Help' : 'Guide & Aide', desc: language === 'en' ? 'Opens this complete technical guide' : 'Ouvre ce manuel technique complet' },
                   { key: 'P', label: language === 'en' ? 'Driver Manager' : 'Gestionnaire de Pilotes', desc: language === 'en' ? 'Opens PnPUtil & Windows Update center' : 'Ouvre le centre PnPUtil & Windows Update' },
                   { key: 'F', label: language === 'en' ? 'BIOS Firmware' : 'Firmware BIOS', desc: language === 'en' ? 'Opens UEFI & SMBIOS updater' : 'Ouvre la mise à jour UEFI & SMBIOS' },
                   { key: 'E', label: language === 'en' ? 'Screen Test' : 'Test Écran', desc: language === 'en' ? '5 colors & dead pixel test' : 'Test 5 couleurs et pixels morts' },
@@ -675,8 +675,8 @@ export default function HelpModal({
         <div className="bg-zinc-900/95 px-6 py-3.5 flex items-center justify-between border-t border-zinc-800 shrink-0">
           <div className="text-xs text-zinc-500 font-mono">
             {language === 'en'
-              ? 'OPEQ Refurbishing Workshop • Integrated online guide'
-              : 'OPEQ Atelier Reconditionnement • Aide en ligne intégrée'}
+              ? 'Refurbishing Workshop • Integrated online guide'
+              : 'Atelier Reconditionnement • Aide en ligne intégrée'}
           </div>
           <button
             onClick={onClose}

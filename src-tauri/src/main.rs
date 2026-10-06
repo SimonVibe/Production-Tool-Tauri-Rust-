@@ -94,14 +94,16 @@ pub struct AppConfig {
     pub burn_in_test_path: String,
     #[serde(default = "default_test_camera_path")]
     pub test_camera_path: String,
-    #[serde(default = "default_battery_app_path")]
-    pub battery_app_path: String,
+    #[serde(default)]
+    pub battery_app_path: Option<String>,
     #[serde(default)]
     pub driver_sdio_path: Option<String>,
     #[serde(default)]
     pub nas_drivers_path: Option<String>,
     #[serde(default)]
     pub auto_reboot: Option<bool>,
+    #[serde(default)]
+    pub default_language: Option<String>,
     #[serde(default)]
     pub hidden_tests: Option<HiddenTestsConfig>,
     #[serde(default)]
@@ -119,7 +121,6 @@ fn default_test_son_path() -> String { "mmsys.cpl".to_string() }
 fn default_test_clavier_path() -> String { "AquaKeyTest.exe".to_string() }
 fn default_burn_in_test_path() -> String { "BurnInTest\\bit.exe".to_string() }
 fn default_test_camera_path() -> String { "test_camera.exe".to_string() }
-fn default_battery_app_path() -> String { "batteryinfoview-x64\\BatteryInfoView.exe".to_string() }
 
 impl Default for AppConfig {
     fn default() -> Self {
@@ -129,10 +130,11 @@ impl Default for AppConfig {
             test_clavier_path: default_test_clavier_path(),
             burn_in_test_path: default_burn_in_test_path(),
             test_camera_path: default_test_camera_path(),
-            battery_app_path: default_battery_app_path(),
+            battery_app_path: None,
             driver_sdio_path: Some("SDIO\\SDI_x64_R.exe".to_string()),
             nas_drivers_path: Some("\\\\serveur-nas\\Tech\\Drivers".to_string()),
             auto_reboot: Some(false),
+            default_language: Some("en".to_string()),
             hidden_tests: Some(HiddenTestsConfig::default()),
             hidden_specs: Some(HiddenSpecsConfig::default()),
             external_apps: Some(Vec::new()),
@@ -369,9 +371,9 @@ fn resolve_path_to_existing(input_path: &str) -> PathBuf {
         current_dir.clone(),
         base_dir.parent().unwrap_or(&base_dir).to_path_buf(),
         base_dir.parent().and_then(|p| p.parent()).unwrap_or(&base_dir).to_path_buf(),
-        PathBuf::from(r"C:\OPEQ\AppPack"),
+        PathBuf::from(r"C:\Tools\AppPack"),
         PathBuf::from(r"C:\AppPack"),
-        PathBuf::from(r"D:\OPEQ\AppPack"),
+        PathBuf::from(r"D:\Tools\AppPack"),
         PathBuf::from(r"Z:\AppPack"),
         PathBuf::from(r"Z:\Tech\AppPack"),
         PathBuf::from(r"Z:\Tech"),
@@ -1566,9 +1568,9 @@ fn get_sys_info() -> HashMap<String, String> {
     }
 
     // Fallback info for non-windows / dev
-    map.insert("Modèle :".into(), "OPEQ Workstation (Tauri Rust Core)".into());
-    map.insert("Numéro de série :".into(), "SN-OPEQ-2026-RUST".into());
-    map.insert("Version de Bios :".into(), "UEFI v2.4 (OPEQ-Tauri)".into());
+    map.insert("Modèle :".into(), "Workstation (Tauri Rust Core)".into());
+    map.insert("Numéro de série :".into(), "SN-2026-RUST".into());
+    map.insert("Version de Bios :".into(), "UEFI v2.4 (Tauri)".into());
     map.insert("CPU :".into(), "Intel Core i7 / AMD Ryzen 7 High Performance".into());
     map.insert("Memoire :".into(), "16 GO".into());
     map.insert("Disque :".into(), "512 GB".into());
@@ -1576,8 +1578,8 @@ fn get_sys_info() -> HashMap<String, String> {
     map.insert("État SMART :".into(), "OK".into());
     map.insert("Carte Vidéo :".into(), "Integrated / Dedicated Graphics".into());
     map.insert("UUID :".into(), "12345678-4321-8765-1234-567812345678".into());
-    map.insert("Asset Tag :".into(), "OPEQ-REF-09".into());
-    map.insert("Ownership Tag :".into(), "OPEQ Quebec".into());
+    map.insert("Asset Tag :".into(), "REF-09".into());
+    map.insert("Ownership Tag :".into(), "Workshop".into());
     map
 }
 
@@ -1844,7 +1846,7 @@ fn get_battery_status() -> BatteryStatusResult {
             # 3. Fallback: PowerCfg /batteryreport XML
             if ($out.design -le 0 -or $out.full -le 0) {
                 try {
-                    $xmlPath = "$env:TEMP\opeq_batt_report.xml"
+                    $xmlPath = "$env:TEMP\batt_report.xml"
                     & powercfg.exe /batteryreport /xml /output "$xmlPath" 2>$null | Out-Null
                     if (Test-Path $xmlPath) {
                         $rawXml = Get-Content $xmlPath -Raw -ErrorAction SilentlyContinue
@@ -2122,47 +2124,6 @@ fn get_battery_status() -> BatteryStatusResult {
     }
 }
 
-#[tauri::command]
-fn generate_battery_report() -> Result<String, String> {
-    #[cfg(target_os = "windows")]
-    {
-        let ps_cmd = r#"
-            $desktop = [Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
-            if (-not $desktop -or -not (Test-Path -LiteralPath $desktop)) {
-                $desktop = Join-Path $env:USERPROFILE "Desktop"
-            }
-            if (-not (Test-Path -LiteralPath $desktop)) {
-                $desktop = [Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyDocuments)
-            }
-            if (-not (Test-Path -LiteralPath $desktop)) {
-                $desktop = $env:TEMP
-            }
-            $out = Join-Path $desktop "Rapport_Batterie.html"
-            & powercfg.exe /batteryreport /output "$out" 2>&1 | Out-Null
-            if (Test-Path -LiteralPath "$out") {
-                Start-Process "$out"
-                Write-Output "SUCCESS: Rapport HTML enregistré sur votre Bureau ($out)"
-            } else {
-                Write-Output "ERROR: Échec de la génération du rapport HTML sur le Bureau"
-            }
-        "#;
-        let mut cmd = Command::new("powershell");
-        cmd.creation_flags(CREATE_NO_WINDOW).args(["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", ps_cmd]);
-        if let Ok(out) = cmd.output() {
-            let stdout = String::from_utf8_lossy(&out.stdout).trim().to_string();
-            if stdout.starts_with("SUCCESS:") {
-                return Ok(stdout.trim_start_matches("SUCCESS:").trim().to_string());
-            } else if stdout.starts_with("ERROR:") {
-                return Err(stdout.trim_start_matches("ERROR:").trim().to_string());
-            }
-        }
-        Ok("Rapport HTML généré avec succès sur votre Bureau (Rapport_Batterie.html)".into())
-    }
-    #[cfg(not(target_os = "windows"))]
-    {
-        Ok("Simulation : Rapport HTML généré et sauvegardé sur le Bureau (Bureau\\Rapport_Batterie.html).".into())
-    }
-}
 
 #[tauri::command]
 fn check_security_status() -> SecurityStatusResult {
@@ -3487,7 +3448,7 @@ fn scan_and_fix_pnp_devices() -> Result<String, String> {
             try {
                 $sm = New-Object -ComObject Microsoft.Update.ServiceManager -ErrorAction SilentlyContinue
                 if ($sm) {
-                    $sm.ClientApplicationID = "OPEQ-Assistant"
+                    $sm.ClientApplicationID = "Hardware-Assistant"
                     $sm.AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "") | Out-Null
                 }
             } catch {}
@@ -5506,12 +5467,12 @@ fn get_detailed_bios_info() -> BiosDetailedInfoResult {
     }
 
     BiosDetailedInfoResult {
-        manufacturer: "OPEQ Workstation".into(),
-        smbios_version: "UEFI v2.4 (OPEQ-Tauri)".into(),
+        manufacturer: "Workstation".into(),
+        smbios_version: "UEFI v2.4 (Tauri)".into(),
         version: "1.0.0".into(),
-        serial_number: "SN-OPEQ-2026-RUST".into(),
+        serial_number: "SN-2026-RUST".into(),
         release_date: "2024-01-15".into(),
-        model: Some("Ordinateur Reconditionné OPEQ".into()),
+        model: Some("Refurbished Workstation".into()),
         update_available: Some(false),
         update_title: None,
         update_version: None,
@@ -5599,7 +5560,6 @@ fn main() {
             export_dism_drivers,
             rebuild_nas_index,
             get_detailed_bios_info,
-            generate_battery_report,
             check_is_admin,
             restart_as_admin
         ])

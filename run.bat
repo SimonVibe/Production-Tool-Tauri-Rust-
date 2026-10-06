@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
-title Outil Update OPEQ (Mode Administrateur) - Build & Packaging
+title Hardware Diagnostic & Update Tool (Mode Administrateur) - Build & Packaging
 
 :: =======================================================
 :: 0. Verification des privileges Administrateur et auto-elevation
@@ -8,7 +8,7 @@ title Outil Update OPEQ (Mode Administrateur) - Build & Packaging
 net session >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo =======================================================
-    echo   [UAC] Elevation requise pour le diagnostic OPEQ
+    echo   [UAC] Elevation requise pour le diagnostic materiel
     echo   Relance automatique en mode Administrateur...
     echo =======================================================
     powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd -ArgumentList '/c \"\"%~f0\"\"' -Verb RunAs"
@@ -16,7 +16,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo =======================================================
-echo   OPEQ - Script de Construction (Tauri v2 + React)
+echo   Hardware Diagnostic Tool - Script de Construction (Tauri v2 + React)
 echo   Generateur d'Installeur et Application Portable
 echo   [MODE ADMINISTRATEUR ACTIF]
 echo =======================================================
@@ -102,9 +102,6 @@ if not exist "src-tauri\icons\icon.ico" (
     if exist "app-icon.png" (
         echo [Icones] Creation automatique des icones depuis app-icon.png...
         call npx @tauri-apps/cli icon app-icon.png
-    ) else if exist "src\assets\opeq-icon.png" (
-        echo [Icones] Creation automatique des icones depuis src\assets\opeq-icon.png...
-        call npx @tauri-apps/cli icon src\assets\opeq-icon.png
     )
 ) else (
     echo [Icones] Les icones Windows/Mac/Linux sont deja presentes dans src-tauri\icons.
@@ -132,8 +129,8 @@ if %ERRORLEVEL% EQU 0 (
     echo =======================================================
     echo   [SUCCES] L'application Tauri a ete generee avec succes !
     echo   Retrouvez a la racine du projet :
-    echo     1. L'application Portable : Outil-Update-OPEQ_v..._Portable.exe
-    echo     2. L'installeur Windows   : Outil-Update-OPEQ_v..._Installer.exe
+    echo     1. L'application Portable : Hardware-Diagnostic-Tool_v..._Portable.exe
+    echo     2. L'installeur Windows   : Hardware-Diagnostic-Tool_v..._Installer.exe
     echo =======================================================
 ) else (
     echo.

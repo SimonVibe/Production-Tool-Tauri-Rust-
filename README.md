@@ -1,4 +1,4 @@
-# OPEQ Update & Diagnostic Tool
+# Hardware Diagnostic & Update Tool
 
 [![Tauri v2](https://img.shields.io/badge/Tauri-v2-blue.svg?logo=tauri)](https://tauri.app/)
 [![Rust](https://img.shields.io/badge/Rust-1.75+-orange.svg?logo=rust)](https://www.rust-lang.org/)
@@ -7,11 +7,11 @@
 [![Vite](https://img.shields.io/badge/Vite-6-646cff.svg?logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8.svg?logo=tailwindcss)](https://tailwindcss.com/)
 [![Windows 10 / 11](https://img.shields.io/badge/Platform-Windows_10_%2F_11_(x64)-0078d4.svg?logo=windows)](https://microsoft.com/windows)
-[![License](https://img.shields.io/badge/License-Proprietary-green.svg)](#)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](#)
 
-A high-performance, native hardware diagnostic, configuration, and driver deployment utility engineered for **OPEQ (Ordinateurs pour les écoles du Québec)** workshop technicians and production refurbishing lines.
+A high-performance, native hardware diagnostic, configuration, and driver deployment utility engineered for computer workshop technicians, IT refurbishing lines, and system maintenance.
 
-Built on **Tauri v2 (Rust + WebView2)** and **React 19**, the application compiles into both an ultra-lightweight **standalone Portable `.exe`** (ready to run instantly from USB flash drives or network shares with zero installation) and an **official Windows Installer (`.exe`)**.
+Built on **Tauri v2 (Rust + WebView2)** and **React 19**, the application compiles into both an ultra-lightweight **standalone Portable executable** (ready to run instantly from USB flash drives or network shares with zero installation) and an **official Windows Installer (`.exe`)**.
 
 ---
 
@@ -33,11 +33,10 @@ Built on **Tauri v2 (Rust + WebView2)** and **React 19**, the application compil
 ### 🔋 Battery Health & Power Telemetry
 - **5-Second Rolling Moving Average**: Background sampling every 1 second (`1000 ms`) with continuous 5-second smoothing (`windowMs = 5000`) for charge percentage, charge power (+Watts), discharge rate (-Watts), and time estimates.
 - **Dynamic Duration Forecasting**: Calculates remaining runtime during discharge (`~X h Y min remaining`) and time required to reach full charge (`Full in ~XhYm`).
-- **One-Click Desktop HTML Report**: Generates official Windows battery reports (`powercfg /batteryreport`) saved directly to the user's **Desktop** (`Rapport_Batterie.html`) and opens them immediately in the default browser.
 - **Detailed Controller Diagnostics**: Cycle count, design capacity, full charge capacity, wear level percentage, battery chemistry, voltage, and serial number.
 
 ### 📦 Driver Hub (NAS / Network & PnPUtil)
-- **Automatic Model Matching**: Recursively scans network shares (e.g., `\\SRV-DONNEES\drivers`) to automatically locate the matching model driver pack.
+- **Automatic Model Matching**: Recursively scans network shares (e.g., `\\serveur-nas\Tech\Drivers`) or local USB media to automatically locate matching model driver packages.
 - **Silent PnPUtil Driver Injection**: Injects `.inf` packages directly into the Windows DriverStore via `pnputil.exe /add-driver *.inf /subdirs /install`.
 - **Realistic 5-Phase Progress Tracker**: Accurately tracks DriverStore copying, device binding, and Plug & Play hardware handshakes with a live stopwatch and anti-looping button protection.
 - **DISM Third-Party Driver Export**: Exports all installed third-party drivers into a deployable folder using `dism.exe /online /export-driver` with folder conflict detection and instant indexing (`index.json` caching in < 100 ms).
@@ -68,10 +67,11 @@ Built on **Tauri v2 (Rust + WebView2)** and **React 19**, the application compil
 - **Clipboard Sync**: Copies formatted logs with tags and timestamps in the active language.
 
 ### ⚙️ Security & Customization
-- **Password-Protected Settings**: Admin configuration locked behind SHA-256 password authentication (default password: `opeq`).
+- **Password-Protected Settings**: Admin configuration locked behind SHA-256 password authentication (default password: `admin`).
+- **Configurable Default Language**: Set the default starting language (`en` or `fr`) in Settings to automatically initialize the interface upon boot.
 - **Granular Specification Hiding**: Customize which hardware rows are visible on the dashboard to streamline technician workflows.
-- **External Workshop Apps**: Register custom external diagnostic or testing utilities (e.g., BurnInTest, FurMark, SDIO) with direct testing buttons.
-- **Bilingual Interface**: Full English and French localization (English by default, toggleable via the header button).
+- **External Workshop Apps**: Register custom external diagnostic or testing utilities (e.g., BurnInTest, FurMark, CPU-Z, SDIO) with direct testing buttons.
+- **Bilingual Interface**: Full English and French localization with instant live session toggling in the header bar.
 
 ---
 
@@ -85,6 +85,13 @@ Built on **Tauri v2 (Rust + WebView2)** and **React 19**, the application compil
 | **Storage** | 150 MB free disk space | 500 MB free disk space |
 | **Privileges** | Standard User (Auto-elevates to Administrator) | Administrator rights for driver/DISM features |
 | **Dependencies** | Microsoft WebView2 Runtime (Built-in on Win 10/11) | Pre-installed |
+
+---
+
+## User Guide & Operations Manual
+
+A detailed, step-by-step operational guide covering all technician workflows, BIOS unlock walk-throughs, battery telemetry, and driver deployment is available in:
+👉 **[USER_GUIDE.md](USER_GUIDE.md)**
 
 ---
 
@@ -109,8 +116,8 @@ run.bat
 5. **Icon Generation**: Generates native Windows `.ico`, macOS `.icns`, and multi-resolution PNG icons from `app-icon.png`.
 6. **Frontend Compilation**: Builds the React 19 / Vite bundle into `/dist`.
 7. **Native Tauri Compilation & Packaging**:
-   - Generates the **Portable Executable**: `Outil-Update-OPEQ_v{version}_Portable.exe`
-   - Generates the **Official Windows Installer**: `Outil-Update-OPEQ_v{version}_Installer.exe`
+   - Generates the **Portable Executable**: `Hardware-Diagnostic-Tool_v{version}_Portable.exe`
+   - Generates the **Official Windows Installer**: `Hardware-Diagnostic-Tool_v{version}_Installer.exe`
    - Copies both final binaries directly to the project root.
 
 ---
@@ -129,8 +136,8 @@ Ensure you have the following installed:
 Clone the repository and install npm packages:
 
 ```bash
-git clone https://github.com/opeq/outil-update-opeq.git
-cd outil-update-opeq
+git clone https://github.com/example/hardware-diagnostic-tool.git
+cd hardware-diagnostic-tool
 npm install
 ```
 
@@ -173,6 +180,13 @@ The resulting executables will be generated in `src-tauri/target/release/bundle/
 | `F5` / `R` | **Full Refresh**: Reloads hardware specifications, drives, battery status, and security compliance. |
 | `L` | **Log Console Toggle**: Expands/collapses the event log drawer or toggles the full-screen modal. |
 | `F` | **Firmware & BIOS Hub**: Directly opens the BIOS / Firmware Update Center. |
+| `P` | **Driver Manager**: Opens the Driver Hub (NAS / PnPUtil / Windows Update). |
+| `E` | **Screen Test**: Opens the full-screen dead pixel diagnostic tester. |
+| `C` | **Camera & Mic Test**: Opens live audio/video hardware test dialog. |
+| `K` | **Keyboard Test**: Launches external keyboard tester (e.g. AquaKeyTest). |
+| `S` | **Sound Test**: Opens Windows sound configuration panel (`mmsys.cpl`). |
+| `B` | **Battery Diagnostic**: Opens detailed battery health and moving average telemetry. |
+| `T` | **BurnIn Test**: Launches CPU/GPU stress test utility. |
 | `Escape` | **Close Modal**: Instantly dismisses any open dialog or modal window. |
 | `?` / `H` | **Help & Guide**: Opens the comprehensive integrated User Guide and Workflow documentation. |
 | `A+` / `A-` / `100%` | **Interface Scaling**: Quick presets for UI zoom and accessibility adjustment. |
@@ -194,7 +208,6 @@ The resulting executables will be generated in `src-tauri/target/release/bundle/
 │   ├── main.tsx                # React application bootstrap with LanguageProvider
 │   ├── App.tsx                 # Core app container, initialization, and layout
 │   ├── types.ts                # TypeScript data models and interface definitions
-│   ├── assets/                 # Embedded base64 logos and assets
 │   ├── hooks/
 │   │   └── useBatteryMonitor.ts # High-precision 1s sampling & 5s moving average hook
 │   ├── i18n/
@@ -207,7 +220,7 @@ The resulting executables will be generated in `src-tauri/target/release/bundle/
 │       ├── Dashboard.tsx        # Main application dashboard and hardware telemetry grid
 │       ├── BrightnessControl.tsx# Compact hardware display brightness slider
 │       ├── DebugLogViewer.tsx   # Collapsible & full-screen live event log viewer
-│       ├── BatteryHealthModal.tsx# Battery diagnostics, smoothing cards, and HTML report generator
+│       ├── BatteryHealthModal.tsx# Real-time battery diagnostics and 5-second moving average telemetry
 │       ├── SecurityGuideModal.tsx# Step-by-step BIOS hardware security unlock procedures
 │       ├── WindowsUpdateModal.tsx# Windows Update COM driver and firmware updater
 │       ├── BiosUpdateModal.tsx  # Dual-mode automatic & manual BIOS firmware flasher
@@ -238,10 +251,10 @@ The tool persists settings inside `config.json` (stored alongside the executable
 
 ```json
 {
-  "nasDriversPath": "\\\\serveur-nas\\Tech",
-  "batteryAppPath": "C:\\OPEQ\\BatteryApp.exe",
+  "nasDriversPath": "\\\\serveur-nas\\Tech\\Drivers",
   "driverSdioPath": "SDIO\\SDI_x64_R.exe",
-  "adminPasswordHash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+  "adminPasswordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+  "defaultLanguage": "en",
   "networkAuth": {
     "path": "\\\\serveur-nas\\Tech",
     "user": "tech",
@@ -258,8 +271,9 @@ The tool persists settings inside `config.json` (stored alongside the executable
 }
 ```
 
-- **NAS Driver Share**: Configured by default to point to `\\serveur-nas\Tech` or local USB media.
-- **Protected Access**: Settings are password-protected with client-side SHA-256 hashing.
+- **Default Starting Language**: Configurable startup language (`"en"` or `"fr"`), loaded immediately on application launch.
+- **NAS Driver Share**: Configured by default to point to `\\serveur-nas\Tech\Drivers` or local USB media.
+- **Protected Access**: Settings are password-protected with client-side SHA-256 hashing (default password: `admin`).
 - **Portability**: Relative paths are fully supported for standalone execution from portable storage drives.
 
 ---
@@ -272,4 +286,4 @@ All notable updates and releases are meticulously documented in [changelog.md](c
 
 ## License
 
-Developed exclusively for **OPEQ (Ordinateurs pour les écoles du Québec)**. All rights reserved.
+This project is licensed under the MIT License. All rights reserved.

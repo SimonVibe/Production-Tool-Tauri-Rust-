@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { AppConfig, defaultConfig } from '../types';
 import { 
   ArrowLeft, Save, FolderSearch, RefreshCw, CheckCircle2, 
-  AlertCircle, AlertTriangle, HelpCircle, Server, FileCode, Check, RotateCcw, Plus, Trash2, Play, EyeOff, Cpu, Eye
+  AlertCircle, AlertTriangle, HelpCircle, Server, FileCode, Check, RotateCcw, Plus, Trash2, Play, EyeOff, Cpu, Eye, Globe
 } from 'lucide-react';
 import { hardwareAPI } from '../lib/tauriAdapter';
 import { validateExecutablePath, validateFolderOrNetworkPath, ValidationResult } from '../lib/pathValidator';
@@ -222,7 +222,6 @@ export default function ConfigPage({ config, onSave, onCancel, onOpenNetwork, is
       testSonPath: validateExecutablePath(formData.testSonPath || ''),
       testClavierPath: validateExecutablePath(formData.testClavierPath || ''),
       burnInTestPath: validateExecutablePath(formData.burnInTestPath || ''),
-      batteryAppPath: validateExecutablePath(formData.batteryAppPath || ''),
       driverSdioPath: validateExecutablePath(formData.driverSdioPath || ''),
       nasDriversPath: validateFolderOrNetworkPath(formData.nasDriversPath || ''),
     };
@@ -301,7 +300,7 @@ export default function ConfigPage({ config, onSave, onCancel, onOpenNetwork, is
             <div className="p-2.5 bg-zinc-950 rounded-xl border border-zinc-800/80 space-y-1">
               <strong className="text-emerald-400">{language === 'en' ? '1. Executables & Scripts:' : '1. Exécutables et Scripts :'}</strong>
               <p className="text-zinc-400">{language === 'en' ? 'Accepted extensions: ' : 'Extensions acceptées : '}<code className="text-zinc-200 font-mono">.exe, .bat, .cmd, .ps1, .cpl, .msc, .vbs</code>.</p>
-              <p className="text-zinc-500 italic">{language === 'en' ? 'Examples: ' : 'Exemples : '}<span className="text-zinc-300 font-mono">mmsys.cpl</span>, <span className="text-zinc-300 font-mono">SDIO\SDI_x64_R.exe</span>, <span className="text-zinc-300 font-mono">C:\OPEQ\Test.exe</span></p>
+              <p className="text-zinc-500 italic">{language === 'en' ? 'Examples: ' : 'Exemples : '}<span className="text-zinc-300 font-mono">mmsys.cpl</span>, <span className="text-zinc-300 font-mono">SDIO\SDI_x64_R.exe</span>, <span className="text-zinc-300 font-mono">C:\Tools\Test.exe</span></p>
             </div>
             <div className="p-2.5 bg-zinc-950 rounded-xl border border-zinc-800/80 space-y-1">
               <strong className="text-blue-400">{language === 'en' ? '2. Network & NAS Folders:' : '2. Dossiers Réseau & NAS :'}</strong>
@@ -360,16 +359,6 @@ export default function ConfigPage({ config, onSave, onCancel, onOpenNetwork, is
         />
 
         <ConfigField 
-          label={t('config.battery_app_path')} 
-          value={formData.batteryAppPath} 
-          onChange={(v) => handleChange('batteryAppPath', v)} 
-          onBrowse={() => handleBrowseFile('batteryAppPath')}
-          placeholder="ex: batteryinfoview-x64\BatteryInfoView.exe"
-          validation={validations.batteryAppPath}
-          language={language}
-        />
-
-        <ConfigField 
           label={t('config.sdio_path')} 
           value={formData.driverSdioPath || ''} 
           onChange={(v) => handleChange('driverSdioPath', v)} 
@@ -390,7 +379,7 @@ export default function ConfigPage({ config, onSave, onCancel, onOpenNetwork, is
           language={language}
         />
 
-        {/* Connexion Réseau OPEQ (NAS) */}
+        {/* Connexion Réseau (NAS) */}
         <div className="mt-2 p-3.5 bg-zinc-950/80 border border-zinc-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-inner">
           <div className="flex items-center space-x-3">
             <div className={`p-2.5 rounded-xl border ${
@@ -444,6 +433,43 @@ export default function ConfigPage({ config, onSave, onCancel, onOpenNetwork, is
           <label htmlFor="autoReboot" className="ml-2.5 text-xs font-bold text-zinc-300 cursor-pointer select-none">
             {t('config.auto_reboot_check')}
           </label>
+        </div>
+
+        {/* Langue de démarrage par défaut */}
+        <div className="pt-3 border-t border-zinc-800/80 mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <label className="text-xs font-bold text-zinc-300 flex items-center gap-2">
+              <Globe size={14} className="text-blue-400" />
+              {t('config.default_language_title')}
+            </label>
+            <p className="text-[11px] text-zinc-400 mt-0.5">
+              {t('config.default_language_desc')}
+            </p>
+          </div>
+          <div className="flex items-center space-x-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800 shrink-0">
+            <button
+              type="button"
+              onClick={() => handleChange('defaultLanguage', 'en')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
+                (formData.defaultLanguage || 'en') === 'en'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+              }`}
+            >
+              <span>🇬🇧 English</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleChange('defaultLanguage', 'fr')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
+                formData.defaultLanguage === 'fr'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+              }`}
+            >
+              <span>🇫🇷 Français</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -704,7 +730,7 @@ export default function ConfigPage({ config, onSave, onCancel, onOpenNetwork, is
               {language === 'en' ? 'Reset configuration?' : 'Réinitialiser la configuration ?'}
             </h3>
             <p className="text-xs text-zinc-300 leading-relaxed">
-              {language === 'en' ? 'All execution paths and NAS network address will be restored to OPEQ default values.' : 'Tous les chemins d\'exécution et l\'adresse réseau NAS seront restaurés aux valeurs d\'usine par défaut OPEQ.'}
+              {language === 'en' ? 'All execution paths and NAS network address will be restored to default values.' : 'Tous les chemins d\'exécution et l\'adresse réseau NAS seront restaurés aux valeurs d\'usine par défaut.'}
             </p>
             <div className="flex justify-end space-x-2 pt-2">
               <button

@@ -21,7 +21,7 @@ let cachedModelDetails: { make: string; model: string; formFactor: string; seria
 let cachedBiosInfo: BiosDetailedInfo | null = null;
 let cachedSecurityStatus: SecurityStatus | null = (() => {
   try {
-    const saved = localStorage.getItem('opeq-security-cache');
+    const saved = localStorage.getItem('app-security-cache') || localStorage.getItem('opeq-security-cache');
     return saved ? JSON.parse(saved) : null;
   } catch {
     return null;
@@ -36,6 +36,7 @@ export const hardwareAPI = {
     cachedBiosInfo = null;
     cachedSecurityStatus = null;
     try {
+      localStorage.removeItem('app-security-cache');
       localStorage.removeItem('opeq-security-cache');
     } catch {}
   },
@@ -54,7 +55,7 @@ export const hardwareAPI = {
     }
 
     if (!rawConfig) {
-      const saved = localStorage.getItem('opeq-tauri-config');
+      const saved = localStorage.getItem('app-tauri-config') || localStorage.getItem('opeq-tauri-config');
       if (saved) {
         try {
           rawConfig = JSON.parse(saved);
@@ -91,7 +92,7 @@ export const hardwareAPI = {
 
     // Always cache in localStorage for instant retrieval
     try {
-      localStorage.setItem('opeq-tauri-config', JSON.stringify(cleanConfig));
+      localStorage.setItem('app-tauri-config', JSON.stringify(cleanConfig));
     } catch {}
 
     if (isTauri()) {
@@ -150,7 +151,7 @@ export const hardwareAPI = {
 
     // Modern Simulated System Specs for Web Preview
     const simInfo = {
-      'Modèle :': 'HP EliteBook 840 G8 (OPEQ Certified)',
+      'Modèle :': 'HP EliteBook 840 G8',
       'Numéro de série :': '5CG1420X99-RUST',
       'Version de Bios :': 'N75 Ver. 01.12.00 (Tauri 2.0 Rust Core)',
       'CPU :': 'Intel(R) Core(TM) i7-1185G7 @ 3.00GHz (8 vCPUs)',
@@ -160,8 +161,8 @@ export const hardwareAPI = {
       'État SMART :': 'OK',
       'Carte Vidéo :': 'Intel(R) Iris(R) Xe Graphics',
       'UUID :': '4A299C81-89B2-4A2E-9C33-72E9A1A22C99',
-      'Asset Tag :': 'OPEQ-QC-2026-009',
-      'Ownership Tag :': 'Ordinateurs pour les Écoles du Québec',
+      'Asset Tag :': 'QC-2026-009',
+      'Ownership Tag :': 'Workshop Workstation',
     };
     cachedSysInfo = simInfo;
     return simInfo;
@@ -221,6 +222,7 @@ export const hardwareAPI = {
         cachedSecurityStatus = status;
         // Do not persist security status to localStorage across sessions (avoids stale SecureBoot/TPM state after reboots)
         try {
+          localStorage.removeItem('app-security-cache');
           localStorage.removeItem('opeq-security-cache');
         } catch {}
         return status;
@@ -262,6 +264,7 @@ export const hardwareAPI = {
         };
         cachedSecurityStatus = status;
         try {
+          localStorage.removeItem('app-security-cache');
           localStorage.removeItem('opeq-security-cache');
         } catch {}
         return status;
@@ -279,6 +282,7 @@ export const hardwareAPI = {
     };
     cachedSecurityStatus = status;
     try {
+      localStorage.removeItem('app-security-cache');
       localStorage.removeItem('opeq-security-cache');
     } catch {}
     return status;
@@ -1071,13 +1075,13 @@ ${autoReboot ? '4. Redémarrage automatique programmé.' : '4. Aucun redémarrag
     try {
       const sys = await this.getSysInfo();
       const modelStr = sys['Modèle :'] || '';
-      const make = modelStr.split(' ')[0] || 'OPEQ';
+      const make = modelStr.split(' ')[0] || 'Generic';
       const info: BiosDetailedInfo = {
         manufacturer: make,
-        model: modelStr || 'Ordinateur Professionnel',
+        model: modelStr || 'Computer Workstation',
         smbiosVersion: sys['Version de Bios :'] || 'UEFI v2.4',
         version: 'UEFI System Firmware',
-        serialNumber: sys['Numéro de série :'] || 'SN-OPEQ-SYSTEM',
+        serialNumber: sys['Numéro de série :'] || 'SN-SYSTEM-2026',
         releaseDate: '2023-04-18',
         updateAvailable: false,
       };
@@ -1178,7 +1182,7 @@ ${autoReboot ? '4. Redémarrage automatique programmé.' : '4. Aucun redémarrag
 
         let currentLang = 'en';
         try {
-          const s = sessionStorage.getItem('opeq_session_lang');
+          const s = sessionStorage.getItem('app_session_lang') || sessionStorage.getItem('opeq_session_lang');
           if (s === 'en' || s === 'fr') currentLang = s;
         } catch {}
         const isEn = currentLang === 'en';
@@ -1217,7 +1221,7 @@ ${autoReboot ? '4. Redémarrage automatique programmé.' : '4. Aucun redémarrag
 
     let currentLang = 'en';
     try {
-      const s = sessionStorage.getItem('opeq_session_lang');
+      const s = sessionStorage.getItem('app_session_lang') || sessionStorage.getItem('opeq_session_lang');
       if (s === 'en' || s === 'fr') currentLang = s;
     } catch {}
     const isEn = currentLang === 'en';
@@ -1245,19 +1249,6 @@ ${autoReboot ? '4. Redémarrage automatique programmé.' : '4. Aucun redémarrag
       chargeRateWatts: simWatts,
       dischargeRateWatts: null,
     };
-  },
-
-  async generateBatteryReport(): Promise<string> {
-    if (isTauri()) {
-      try {
-        return await invoke<string>('generate_battery_report');
-      } catch (err: any) {
-        throw new Error(typeof err === 'string' ? err : err.message || 'Échec de génération du rapport de batterie');
-      }
-    }
-
-    await new Promise((r) => setTimeout(r, 600));
-    return 'Simulation : Rapport HTML généré avec succès sur le Bureau (Rapport_Batterie.html)';
   },
 };
 

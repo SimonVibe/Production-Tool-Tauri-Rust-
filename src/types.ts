@@ -38,10 +38,10 @@ export interface AppConfig {
   testClavierPath: string;
   burnInTestPath: string;
   testCameraPath: string;
-  batteryAppPath: string;
   driverSdioPath: string;
   nasDriversPath: string;
   autoReboot: boolean;
+  defaultLanguage?: 'en' | 'fr';
   hiddenTests?: {
     screen?: boolean;
     audio?: boolean;
@@ -166,10 +166,10 @@ export const defaultConfig: AppConfig = {
   testClavierPath: 'AquaKeyTest.exe',
   burnInTestPath: 'BurnInTest\\bit.exe',
   testCameraPath: 'test_camera.exe',
-  batteryAppPath: 'batteryinfoview-x64\\BatteryInfoView.exe',
   driverSdioPath: 'SDIO\\SDI_x64_R.exe',
   nasDriversPath: '\\\\serveur-nas\\Tech\\Drivers',
   autoReboot: false,
+  defaultLanguage: 'en',
   hiddenTests: {
     screen: false,
     audio: false,

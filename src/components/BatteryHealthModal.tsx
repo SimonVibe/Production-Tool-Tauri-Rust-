@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { 
   X, Battery, BatteryCharging, BatteryWarning, Zap, RefreshCw, 
-  Activity, FileText, ExternalLink, ShieldCheck, HeartPulse, Sparkles, Check,
+  Activity, ShieldCheck, HeartPulse,
   Clock, Timer
 } from 'lucide-react';
 import { BatteryStatus, AppConfig } from '../types';
@@ -11,7 +11,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  config: AppConfig;
+  config?: AppConfig;
   onExecuteExternal?: (name: string, path: string) => void;
   battery?: BatteryStatus | null;
   onRefreshBattery?: () => Promise<any>;
@@ -22,8 +22,6 @@ interface Props {
 export default function BatteryHealthModal({ 
   isOpen, 
   onClose, 
-  config, 
-  onExecuteExternal,
   battery: propBattery,
   onRefreshBattery,
   isUpdating: propIsUpdating,
@@ -32,8 +30,6 @@ export default function BatteryHealthModal({
   const { language, t } = useLanguage();
   const [internalBattery, setInternalBattery] = useState<BatteryStatus | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [generatingReport, setGeneratingReport] = useState(false);
-  const [reportSuccess, setReportSuccess] = useState<string | null>(null);
 
   const battery = propBattery ?? internalBattery;
   const isUpdating = propIsUpdating || false;
@@ -60,26 +56,10 @@ export default function BatteryHealthModal({
       if (!propBattery) {
         fetchBatteryData();
       }
-    } else {
-      setReportSuccess(null);
     }
   }, [isOpen, propBattery]);
 
   const durationInfo = useMemo(() => formatBatteryDuration(battery, language), [battery, language]);
-
-  const handleGenerateReport = async () => {
-    setGeneratingReport(true);
-    setReportSuccess(null);
-    try {
-      const res = await hardwareAPI.generateBatteryReport();
-      setReportSuccess(res || (language === 'en' ? 'HTML Report successfully generated.' : 'Rapport HTML généré avec succès.'));
-      setTimeout(() => setReportSuccess(null), 5000);
-    } catch (err: any) {
-      setReportSuccess(`${language === 'en' ? 'Error' : 'Erreur'} : ${err?.message || String(err)}`);
-    } finally {
-      setGeneratingReport(false);
-    }
-  };
 
   if (!isOpen) return null;
 
@@ -374,60 +354,6 @@ export default function BatteryHealthModal({
               </div>
             </div>
           </div>
-
-          {/* Action Tools Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            
-            {/* Generate Windows HTML Battery Report */}
-            <button
-              onClick={handleGenerateReport}
-              disabled={generatingReport}
-              className="px-4 py-3 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 rounded-xl flex items-center justify-between text-left transition-all cursor-pointer group shadow-sm"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20 group-hover:scale-105 transition-transform">
-                  <FileText size={18} />
-                </div>
-                <div>
-                  <h5 className="text-xs font-bold text-zinc-200 group-hover:text-blue-300">{language === 'en' ? 'Full Windows Battery Report' : 'Rapport Complet Windows'}</h5>
-                  <p className="text-[11px] text-zinc-500">{language === 'en' ? 'Generate on Desktop & open (powercfg)' : 'Générer sur le Bureau & ouvrir (powercfg)'}</p>
-                </div>
-              </div>
-              <Sparkles size={14} className={generatingReport ? 'animate-spin text-blue-400' : 'text-zinc-600 group-hover:text-blue-400'} />
-            </button>
-
-            {/* Launch BatteryInfoView External Utility */}
-            <button
-              onClick={() => {
-                if (onExecuteExternal) {
-                  onExecuteExternal('Application Batterie', config.batteryAppPath);
-                } else {
-                  hardwareAPI.executeAction('Application Batterie', config.batteryAppPath);
-                }
-              }}
-              className="px-4 py-3 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 rounded-xl flex items-center justify-between text-left transition-all cursor-pointer group shadow-sm"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20 group-hover:scale-105 transition-transform">
-                  <ExternalLink size={18} />
-                </div>
-                <div>
-                  <h5 className="text-xs font-bold text-zinc-200 group-hover:text-emerald-300">{language === 'en' ? 'External Tool (BatteryInfoView)' : 'Outil Externe (BatteryInfoView)'}</h5>
-                  <p className="text-[11px] text-zinc-500">{language === 'en' ? 'Launch graphical test tool' : 'Lancer l\'utilitaire graphique de test'}</p>
-                </div>
-              </div>
-              <ExternalLink size={14} className="text-zinc-600 group-hover:text-emerald-400" />
-            </button>
-
-          </div>
-
-          {/* Feedback Message */}
-          {reportSuccess && (
-            <div className="p-3 bg-zinc-950 border border-blue-500/40 rounded-xl text-xs text-blue-300 flex items-center space-x-2 animate-in fade-in">
-              <Check size={14} className="text-emerald-400 shrink-0" />
-              <span>{reportSuccess}</span>
-            </div>
-          )}
 
         </div>
 

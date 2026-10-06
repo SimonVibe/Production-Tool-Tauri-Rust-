@@ -2,12 +2,13 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import Dashboard from './components/Dashboard';
 import { AppConfig, defaultConfig, SecurityStatus } from './types';
 import { hardwareAPI, isTauri } from './lib/tauriAdapter';
+import { useLanguage } from './i18n/LanguageContext';
 
 const ConfigPage = lazy(() => import('./components/ConfigPage'));
 const NetworkLoginModal = lazy(() => import('./components/NetworkLoginModal'));
 const ConfigAuthModal = lazy(() => import('./components/ConfigAuthModal'));
 
-export const DEFAULT_ADMIN_HASH = 'b45ebce2c7ded784ff72b3569bbe571ec5e43f3d3cdc0954d13a9a39a97bde64'; // Hash for "opeq"
+export const DEFAULT_ADMIN_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // Default admin password hash ("admin")
 
 const calculateIdealZoom = () => {
   if (typeof window === 'undefined') return 1.0;
@@ -30,13 +31,14 @@ const calculateIdealZoom = () => {
 };
 
 export default function App() {
+  const { setLanguage } = useLanguage();
   const [currentView, setCurrentView] = useState<'dashboard' | 'config'>('dashboard');
   const [config, setConfig] = useState<AppConfig>(defaultConfig);
   const [brightness, setBrightness] = useState(100);
   
   const [zoomLevel, setZoomLevel] = useState<number>(() => {
     try {
-      const saved = localStorage.getItem('opeq-zoom-manual');
+      const saved = localStorage.getItem('app-zoom-manual') || localStorage.getItem('opeq-zoom-manual');
       if (saved) {
         const parsed = parseFloat(saved);
         if (!isNaN(parsed)) return parsed;
@@ -61,6 +63,7 @@ export default function App() {
         setZoomLevel(ideal);
         try {
           // Clear manual override when the window size significantly changes
+          localStorage.removeItem('app-zoom-manual');
           localStorage.removeItem('opeq-zoom-manual');
         } catch {}
       }, 250);
@@ -92,6 +95,7 @@ export default function App() {
 
   const [securityStatus, setSecurityStatus] = useState<SecurityStatus>(() => {
     try {
+      localStorage.removeItem('app-security-cache');
       localStorage.removeItem('opeq-security-cache');
     } catch {}
     return { tpm: null, secureBoot: null, isUefi: null };
@@ -139,6 +143,13 @@ export default function App() {
           if (!isMounted) return;
           setConfig(loadedConfig);
 
+          try {
+            const hasSessionLang = sessionStorage.getItem('app_session_lang');
+            if (!hasSessionLang && loadedConfig.defaultLanguage) {
+              setLanguage(loadedConfig.defaultLanguage);
+            }
+          } catch {}
+
           const netPath = loadedConfig.networkAuth?.path || loadedConfig.nasDriversPath || '\\\\serveur-nas\\Tech';
           const netUser = loadedConfig.networkAuth?.user || '';
           const netPass = loadedConfig.networkAuth?.pass || '';
@@ -177,6 +188,9 @@ export default function App() {
   const handleSaveConfig = async (newConfig: AppConfig) => {
     setConfig(newConfig);
     await hardwareAPI.saveConfig(newConfig);
+    if (newConfig.defaultLanguage) {
+      setLanguage(newConfig.defaultLanguage);
+    }
     const timestamp = new Date().toLocaleTimeString();
     setDebugLogs(prev => [`[${timestamp}] Configuration sauvegardée avec succès`, ...prev].slice(0, 50));
     setCurrentView('dashboard');

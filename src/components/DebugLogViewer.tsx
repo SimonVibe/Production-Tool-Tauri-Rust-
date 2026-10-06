@@ -139,7 +139,7 @@ export default function DebugLogViewer({
   const { t, language } = useLanguage();
   // Read initial collapsed state from localStorage
   const [internalExpanded, setInternalExpanded] = useState<boolean>(() => {
-    const saved = localStorage.getItem('opeq_logs_expanded');
+    const saved = localStorage.getItem('app_logs_expanded') || localStorage.getItem('opeq_logs_expanded');
     return saved === 'true';
   });
 
@@ -151,7 +151,7 @@ export default function DebugLogViewer({
       onToggleExpand(nextState);
     } else {
       setInternalExpanded(nextState);
-      localStorage.setItem('opeq_logs_expanded', String(nextState));
+      localStorage.setItem('app_logs_expanded', String(nextState));
     }
   };
 

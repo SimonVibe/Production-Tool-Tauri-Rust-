@@ -475,7 +475,7 @@ export default function BiosUpdateModal({
                   {language === 'en' ? 'BIOS & UEFI Firmware Update' : 'Mise à jour du BIOS & Firmware UEFI'}
                 </h3>
                 <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-950/60 border border-amber-500/40 text-amber-300 rounded-full">
-                  OPEQ Diagnostic
+                  {language === 'en' ? 'Hardware Diagnostic' : 'Diagnostic Matériel'}
                 </span>
               </div>
               <p className="text-xs text-zinc-400 mt-0.5">

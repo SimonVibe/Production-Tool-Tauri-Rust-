@@ -1,8 +1,8 @@
 [package]
 name = "outil-update"
-version = "1.2.40"
-description = "Interface utilitaire OPEQ pour tests et configuration matérielle (Tauri + Rust)"
-authors = ["OPEQ"]
+version = "1.2.44"
+description = "Hardware diagnostic and configuration utility (Tauri + Rust)"
+authors = ["Hardware Workshop"]
 edition = "2021"
 
 [build-dependencies]

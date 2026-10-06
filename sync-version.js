@@ -34,13 +34,13 @@ try {
   const tauriConfPath = 'src-tauri/tauri.conf.json';
   const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, 'utf-8'));
   tauriConf.version = version;
-  tauriConf.productName = 'Outil Update OPEQ';
+  tauriConf.productName = 'Hardware Diagnostic Tool';
   if (tauriConf.app && tauriConf.app.windows && tauriConf.app.windows[0]) {
-    tauriConf.app.windows[0].title = `Outil Update OPEQ v${version} - Diagnostic & Config Hardware`;
+    tauriConf.app.windows[0].title = `Hardware Diagnostic & Update Tool v${version}`;
   }
   delete tauriConf.mainBinaryName;
   fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2) + '\n');
-  console.log(`  [+] tauri.conf.json mis à jour (titre: Outil Update OPEQ v${version})`);
+  console.log(`  [+] tauri.conf.json mis à jour (titre: Hardware Diagnostic & Update Tool v${version})`);
 } catch (e) {
   console.error(`  [-] Erreur tauri.conf.json:`, e.message);
 }

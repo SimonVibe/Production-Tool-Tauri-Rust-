@@ -3,8 +3,8 @@ import path from 'path';
 import { getChangelogVersion } from './sync-version.js';
 
 const version = getChangelogVersion();
-const targetExeName = `Outil-Update-OPEQ_v${version}.exe`;
-const portableExeName = `Outil-Update-OPEQ_v${version}_Portable.exe`;
+const targetExeName = `Hardware-Diagnostic-Tool_v${version}.exe`;
+const portableExeName = `Hardware-Diagnostic-Tool_v${version}_Portable.exe`;
 const releaseDir = path.join('src-tauri', 'target', 'release');
 
 console.log(`\n=======================================================`);
@@ -48,7 +48,7 @@ if (fs.existsSync(releaseDir)) {
         for (const pkgFile of pkgFiles) {
           if (pkgFile.endsWith('.exe') || pkgFile.endsWith('.msi')) {
             const ext = path.extname(pkgFile);
-            const installerDestName = `Outil-Update-OPEQ_v${version}_Installer${ext}`;
+            const installerDestName = `Hardware-Diagnostic-Tool_v${version}_Installer${ext}`;
             const pkgSrc = path.join(bPath, pkgFile);
             const pkgDest = path.join('.', installerDestName);
             try {

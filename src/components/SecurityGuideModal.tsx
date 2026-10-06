@@ -1192,8 +1192,8 @@ export function SecurityGuideModal({
         <div className="bg-zinc-900/95 px-5 py-3.5 flex items-center justify-between border-t border-zinc-800 shrink-0">
           <div className="text-[11px] text-zinc-400">
             {isEn
-              ? <>OPEQ Tip: Steps with amber <strong className="text-amber-300">Action required</strong> badge correspond to settings missing on this machine.</>
-              : <>Astuce OPEQ : Les étapes avec badge ambré <strong className="text-amber-300">Action requise</strong> correspondent aux paramètres manquants sur cette machine.</>}
+              ? <>Security Tip: Steps with amber <strong className="text-amber-300">Action required</strong> badge correspond to settings missing on this machine.</>
+              : <>Astuce Sécurité : Les étapes avec badge ambré <strong className="text-amber-300">Action requise</strong> correspondent aux paramètres manquants sur cette machine.</>}
           </div>
           <button
             onClick={onClose}

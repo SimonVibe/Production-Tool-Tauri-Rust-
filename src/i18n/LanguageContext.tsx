@@ -43,8 +43,8 @@ export const translations: Record<string, { fr: string; en: string }> = {
   'header.zoom_in': { fr: 'Agrandir l\'interface (A+)', en: 'Zoom in interface (A+)' },
   'header.zoom_reset': { fr: 'Niveau de zoom. Cliquez pour Auto-Ajuster', en: 'Zoom level. Click to Auto-Fit' },
   'header.config': { fr: 'Configuration', en: 'Settings' },
-  'header.config_tooltip': { fr: 'Configuration des chemins système et connexion réseau OPEQ', en: 'System paths configuration & OPEQ network connection' },
-  'header.help_tooltip': { fr: 'Manuel d\'utilisation, Guide OPEQ & Raccourcis (? ou H)', en: 'User manual, OPEQ guide & Shortcuts (? or H)' },
+  'header.config_tooltip': { fr: 'Configuration des chemins système et connexion réseau', en: 'System paths configuration & NAS network connection' },
+  'header.help_tooltip': { fr: 'Manuel d\'utilisation, Guide & Raccourcis (? ou H)', en: 'User manual, Technical guide & Shortcuts (? or H)' },
   'header.lang_switch': { fr: 'Changer la langue (FR / EN)', en: 'Switch language (FR / EN)' },
 
   // Preflight Banner
@@ -132,7 +132,7 @@ export const translations: Record<string, { fr: string; en: string }> = {
   'battery.health': { fr: 'Santé :', en: 'Health:' },
   'battery.remaining': { fr: '(restante)', en: '(remaining)' },
   'battery.diagnostic_shortcut': { fr: 'Diagnostic (B)', en: 'Diagnostic (B)' },
-  'battery.button_tooltip': { fr: 'Cliquez pour ouvrir le Diagnostic Santé & Rapport (B)', en: 'Click to open Battery Health Diagnosis & Report (B)' },
+  'battery.button_tooltip': { fr: 'Cliquez pour ouvrir le Diagnostic Santé Batterie (B)', en: 'Click to open Battery Health Diagnostics (B)' },
   'hardware.bluetooth': { fr: 'Bluetooth', en: 'Bluetooth' },
   'hardware.bluetooth_tooltip': { fr: 'Paramètres Bluetooth Windows', en: 'Windows Bluetooth settings' },
   'hardware.wifi': { fr: 'WiFi', en: 'WiFi' },
@@ -181,9 +181,6 @@ export const translations: Record<string, { fr: string; en: string }> = {
   'battery_modal.chemistry': { fr: 'Chimie', en: 'Chemistry' },
   'battery_modal.manufacturer': { fr: 'Fabricant', en: 'Manufacturer' },
   'battery_modal.battery_sn': { fr: 'N° de série batterie', en: 'Battery Serial Number' },
-  'battery_modal.generate_report': { fr: 'Générer rapport de batterie Windows (HTML)', en: 'Generate Windows Battery Report (HTML)' },
-  'battery_modal.generating': { fr: 'Génération en cours...', en: 'Generating...' },
-  'battery_modal.external_tool': { fr: 'Ouvrir BatteryInfoView (Outil Externe)', en: 'Open BatteryInfoView (External Tool)' },
 
   // Screen Test Modal
   'screen_test.instructions': { fr: 'Test d\'écran : Cliquez pour changer de couleur. Échap pour quitter.', en: 'Screen test: Click to cycle colors. Esc to exit.' },
@@ -207,7 +204,7 @@ export const translations: Record<string, { fr: string; en: string }> = {
   'cam_mic.no_mic': { fr: 'Aucun microphone détecté ou permission refusée.', en: 'No microphone detected or permission denied.' },
 
   // Drivers Modal & Hub
-  'drivers_hub.title': { fr: 'Centre d\'Installation des Pilotes OPEQ', en: 'OPEQ Driver Installation Center' },
+  'drivers_hub.title': { fr: 'Centre d\'Installation des Pilotes', en: 'Driver Installation Center' },
   'drivers_hub.dev_manager': { fr: 'Gestionnaire de périphériques :', en: 'Device Manager:' },
   'drivers_hub.choose_method': { fr: 'Choisissez la méthode d\'installation détaillée en premier plan :', en: 'Choose the detailed foreground installation method:' },
   'drivers_hub.opt1_title': { fr: '1. Pilotes Réseau & Dossier NAS (PnPUtil / DISM)', en: '1. Network & NAS Driver Repository (PnPUtil / DISM)' },
@@ -277,7 +274,7 @@ export const translations: Record<string, { fr: string; en: string }> = {
   'sec_guide.action_needed': { fr: 'Action Requise', en: 'Action Required' },
 
   // Help Modal
-  'help.title': { fr: 'Guide & Procédure d\'Utilisation OPEQ', en: 'OPEQ User Guide & Procedures' },
+  'help.title': { fr: 'Guide & Procédure d\'Utilisation', en: 'User Guide & Procedures' },
   'help.subtitle': { fr: 'Reconditionnement, installation des pilotes, mises à jour et tests matériels', en: 'Refurbishment, driver installations, updates and hardware diagnostics' },
   'help.tab_workflow': { fr: '1. Procédure Globale', en: '1. Global Workflow' },
   'help.tab_drivers': { fr: '2. Pilotes & NAS', en: '2. Drivers & NAS' },
@@ -287,7 +284,7 @@ export const translations: Record<string, { fr: string; en: string }> = {
   'help.tab_shortcuts': { fr: '6. Raccourcis Clavier', en: '6. Keyboard Shortcuts' },
 
   // Config Page
-  'config.title': { fr: 'Configuration de l\'Application OPEQ', en: 'OPEQ Application Settings' },
+  'config.title': { fr: 'Configuration de l\'Application', en: 'Application Settings' },
   'config.paths_title': { fr: 'Chemins des Outils & Utilitaires Système', en: 'Tools & System Utility Paths' },
   'config.nas_path': { fr: 'Dossier Partagé des Pilotes (NAS)', en: 'Driver Shared Repository (NAS)' },
   'config.screen_path': { fr: 'Exécutable Test d\'Écran', en: 'Screen Test Executable' },
@@ -295,10 +292,11 @@ export const translations: Record<string, { fr: string; en: string }> = {
   'config.keyboard_path': { fr: 'Exécutable Test Clavier', en: 'Keyboard Test Executable' },
   'config.burnin_path': { fr: 'Exécutable BurnInTest', en: 'BurnInTest Executable' },
   'config.camera_path': { fr: 'Exécutable Test Caméra', en: 'Camera Test Executable' },
-  'config.battery_path': { fr: 'Exécutable BatteryInfoView', en: 'BatteryInfoView Executable' },
   'config.sdio_path': { fr: 'Exécutable Snappy Driver Installer (SDIO)', en: 'Snappy Driver Installer (SDIO) Executable' },
   'config.auto_reboot': { fr: 'Redémarrage Automatique', en: 'Automatic Reboot' },
   'config.auto_reboot_desc': { fr: 'Redémarrer automatiquement après l\'installation des pilotes ou la mise à jour BIOS si requis.', en: 'Automatically reboot after driver installations or BIOS updates if required.' },
+  'config.default_language_title': { fr: 'Langue de Démarrage par Défaut', en: 'Default Starting Language' },
+  'config.default_language_desc': { fr: "Définissez la langue active par défaut lors du démarrage de l'application.", en: 'Set the active language loaded upon application startup.' },
   'config.hidden_tests': { fr: 'Visibilité des Boutons de Tests', en: 'Test Buttons Visibility' },
   'config.hidden_specs': { fr: 'Visibilité des Lignes de Spécifications', en: 'Specifications Rows Visibility' },
   'config.external_apps': { fr: 'Applications Externes Additionnelles', en: 'Additional External Applications' },
@@ -379,21 +377,20 @@ export const translations: Record<string, { fr: string; en: string }> = {
   'config.sound_test_path': { fr: "Chemin 'Test de son'", en: "'Sound test' path" },
   'config.keyboard_test_path': { fr: "Chemin 'Test Clavier'", en: "'Keyboard test' path" },
   'config.burnin_test_path': { fr: "Chemin 'BurnIn stress test'", en: "'BurnIn stress test' path" },
-  'config.battery_app_path': { fr: 'Chemin application Batterie', en: "'Battery' app path" },
   'config.nas_source_folder': { fr: 'Dossier Source Pilotes Réseau (NAS/USB)', en: 'Network Drivers Source Folder (NAS/USB)' },
-  'config.net_conn_title': { fr: 'Connexion au Réseau OPEQ', en: 'OPEQ Network Connection' },
+  'config.net_conn_title': { fr: 'Connexion au Réseau NAS', en: 'NAS Network Connection' },
   'config.connected': { fr: 'Connecté', en: 'Connected' },
   'config.not_connected': { fr: 'Non connecté', en: 'Not connected' },
   'config.net_conn_desc': { fr: "Authentification et montage du lecteur réseau partagé de l'atelier", en: 'Authentication and mounting of the workshop shared network drive' },
   'config.manage_reauth': { fr: 'Gérer / Réauthentifier', en: 'Manage / Re-authenticate' },
-  'config.connect_net_btn': { fr: 'Connexion Réseau OPEQ', en: 'Connect OPEQ Network' },
+  'config.connect_net_btn': { fr: 'Connexion Réseau NAS', en: 'Connect NAS Network' },
   'config.auto_reboot_check': { fr: "Redémarrer automatiquement après l'installation des pilotes (AutoReboot)", en: 'Automatically reboot after driver installation (AutoReboot)' },
   'config.external_tools_title': { fr: 'Applications Externes & Outils Personnalisés', en: 'External Applications & Custom Tools' },
   'config.external_tools_desc': { fr: "Ajoutez des raccourcis vers vos outils d'atelier (ex: CPU-Z, HWiNFO, FurMark, scripts batch) pour les lancer depuis le tableau de bord.", en: 'Add shortcuts to your workshop tools (e.g. CPU-Z, HWiNFO, FurMark, batch scripts) to launch them from the dashboard.' },
   'config.add_app_btn': { fr: 'Ajouter une application', en: 'Add Application' },
   'config.test_app': { fr: 'Tester', en: 'Test' },
   'config.app_name_ph': { fr: "Nom de l'application (ex: CPU-Z)", en: 'Application name (e.g. CPU-Z)' },
-  'config.app_path_ph': { fr: "Chemin d'accès (ex: C:\\OPEQ\\cpuz.exe ou \\\\serveur\\tools\\app.exe)", en: 'Access path (e.g. C:\\OPEQ\\cpuz.exe or \\\\server\\tools\\app.exe)' },
+  'config.app_path_ph': { fr: "Chemin d'accès (ex: C:\\Tools\\cpuz.exe ou \\\\serveur\\tools\\app.exe)", en: 'Access path (e.g. C:\\Tools\\cpuz.exe or \\\\server\\tools\\app.exe)' },
   'config.new_pass_ph': { fr: 'Nouveau mot de passe (optionnel)', en: 'New password (optional)' },
   'config.confirm_pass_ph': { fr: 'Confirmer le mot de passe', en: 'Confirm password' },
   'config.pass_mismatch': { fr: 'Les mots de passe ne correspondent pas.', en: 'Passwords do not match.' },
@@ -467,12 +464,19 @@ const LanguageContext = createContext<LanguageContextType>({
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Default to English ('en') with optional session-level persistence
+  // Default to English ('en') with optional session-level persistence or saved configuration default
   const [language, setLanguageState] = useState<Language>(() => {
     try {
-      const sessionLang = sessionStorage.getItem('opeq_session_lang');
+      const sessionLang = sessionStorage.getItem('app_session_lang');
       if (sessionLang === 'fr' || sessionLang === 'en') {
         return sessionLang;
+      }
+      const savedConfig = localStorage.getItem('app-tauri-config');
+      if (savedConfig) {
+        const parsed = JSON.parse(savedConfig);
+        if (parsed.defaultLanguage === 'fr' || parsed.defaultLanguage === 'en') {
+          return parsed.defaultLanguage;
+        }
       }
     } catch {}
     return 'en';
@@ -481,7 +485,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     try {
-      sessionStorage.setItem('opeq_session_lang', lang);
+      sessionStorage.setItem('app_session_lang', lang);
     } catch {}
   };
 

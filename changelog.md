@@ -1,6 +1,61 @@
 # Changelog
 
-This file keeps track of all major changes made to the **OPEQ Update & Diagnostic Tool** application.
+This file keeps track of all major changes made to the **Hardware Diagnostic & Update Tool** application.
+
+---
+
+## [2026-10-06] - Version 1.2.44: Configurable Default Starting Language
+
+### [Added]
+* **Default Starting Language Setting (`defaultLanguage`)**:
+  * Added `defaultLanguage?: 'en' | 'fr'` to `AppConfig` and `defaultConfig` in `src/types.ts` and `src-tauri/src/main.rs`.
+  * Added an interactive language selector (English / Français) in the Settings page (`src/components/ConfigPage.tsx`).
+  * Enhanced `LanguageProvider` (`src/i18n/LanguageContext.tsx`) and application bootstrap (`src/App.tsx`) to immediately initialize the UI using the persisted `defaultLanguage` preference unless manually toggled during the active session.
+* **Documentation Synchronization & Technical Audit (`README.md`, `USER_GUIDE.md`)**:
+  * Harmonized the features list and configuration specifications to reflect the default password (`admin`), the new `defaultLanguage` startup setting, and the removal of legacy external battery tools and reports.
+  * Corrected project directory structure descriptions and cross-referenced the operational manual.
+
+---
+
+## [2026-10-06] - Version 1.2.43: Removed BatteryInfoView & Windows Battery Report
+
+### [Removed]
+* **BatteryInfoView Configuration & Integration**:
+  * Removed `batteryAppPath` from configuration data model (`AppConfig`, `defaultConfig`) in `src/types.ts`.
+  * Removed the executable path input field and validation for BatteryInfoView in `src/components/ConfigPage.tsx`.
+  * Removed the "External Tool (BatteryInfoView)" launch button from `src/components/BatteryHealthModal.tsx`.
+  * Removed associated localized strings in `src/i18n/LanguageContext.tsx`.
+* **Windows Battery Report Generation**:
+  * Removed the "Full Windows Battery Report" button, state handling, and feedback messages from `src/components/BatteryHealthModal.tsx`.
+  * Removed `hardwareAPI.generateBatteryReport` from `src/lib/tauriAdapter.ts`.
+  * Removed the native `generate_battery_report` command and invoke registration from `src-tauri/src/main.rs`.
+  * Updated `README.md` and `USER_GUIDE.md` to reflect the streamlined battery telemetry modal.
+
+---
+
+## [2026-10-06] - Version 1.2.42: Updated Default Configuration Password to "admin"
+
+### [Changed]
+* **Default Admin Password Update (`src/App.tsx`, `README.md`, `USER_GUIDE.md`)**:
+  * Updated the fallback `DEFAULT_ADMIN_HASH` constant in `src/App.tsx` from the legacy hash to the SHA-256 hash of `"admin"` (`8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918`).
+  * Updated technical documentation, example `config.json` specifications, and operational manuals (`README.md`, `USER_GUIDE.md`) to reflect the new default password (`admin`).
+
+---
+
+## [2026-10-02] - Version 1.2.41: Neutral Branding, Legacy Brand Removal & Header Redesign
+
+### [Removed]
+* **Brand Neutralization & Identity Cleanup**:
+  * Removed legacy brand names, logos, tags, and references across codebase, UI elements, configuration schemas, help manuals, and build scripts.
+  * Replaced the header logo with a sleek, modern Hardware Diagnostic Suite brand icon (`Cpu`), live version badge, and descriptive subtitle in `src/components/Dashboard.tsx`.
+  * Removed `src/assets/logoBase64.ts` and deleted obsolete logo references.
+  * Neutralized mock hardware specifications in `src/lib/tauriAdapter.ts` and `src-tauri/src/main.rs` (e.g. `HP EliteBook 840 G8`, `QC-2026-009`, `SN-SYSTEM-2026`, `Workshop Workstation`).
+  * Sanitized default paths (`C:\Tools\...`), client application IDs, and localStorage/sessionStorage keys.
+
+### [Changed]
+* **Application Naming & Artifacts**:
+  * Updated Tauri product name, window titles, and executable artifact names to `Hardware Diagnostic Tool` (`Hardware-Diagnostic-Tool_v{version}_Portable.exe` and `Hardware-Diagnostic-Tool_v{version}_Installer.exe`).
+  * Updated `package.json`, `index.html`, `run.bat`, `sync-version.js`, and `post-build.js` accordingly.
 
 ---
 
@@ -94,7 +149,7 @@ This file keeps track of all major changes made to the **OPEQ Update & Diagnosti
     * C++ Build Tools (MSVC) detection and user guidance.
   * Automatic app icon generation (`src-tauri/icons/icon.ico`, `.icns`, and PNG formats) from `app-icon.png` via `@tauri-apps/cli icon`.
   * Dynamic version synchronization from `changelog.md` to `package.json`, `tauri.conf.json`, and `Cargo.toml`.
-  * Native build creating both **Portable** (`Outil-Update-OPEQ_v{version}_Portable.exe`) and **Official Windows Installer** (`Outil-Update-OPEQ_v{version}_Installer.exe`) copied directly to workspace root.
+  * Native build creating both **Portable** (`Hardware-Diagnostic-Tool_v{version}_Portable.exe`) and **Official Windows Installer** (`Hardware-Diagnostic-Tool_v{version}_Installer.exe`) copied directly to workspace root.
 * **File Unification & Standards**:
   * Strict maintenance of a single `changelog.md` and single `run.bat` at workspace root.
 
@@ -354,7 +409,7 @@ This file keeps track of all major changes made to the **OPEQ Update & Diagnosti
 ### [Added]
 * **Settings Password Protection**:
   * Implemented security modal (`ConfigAuthModal`) requiring a password to access Settings.
-  * Default password hashed via SHA-256 to prevent plain-text exposure (Default password: `opeq`).
+  * Default password hashed via SHA-256 to prevent plain-text exposure.
   * Added *"Security (Settings)"* section in Settings page to change password.
   * New password hashed client-side before saving (`adminPasswordHash`) into `config.json`.
 
@@ -553,7 +608,7 @@ This file keeps track of all major changes made to the **OPEQ Update & Diagnosti
 
 ### 🐛 Bug Fixes
 * **UEFI Detection (BIOS Mode)**: Replaced registry checks with native Win32 `GetFirmwareType` API (`kernel32.dll`), matching `msinfo32.exe`. Added fallback layers (EFI environment variables, `winload.efi` loader signature via `bcdedit`, `SecureBoot` key). Machines booted in UEFI are accurately identified as `UEFI (Modern)` and `GPT`.
-* **Automated Executable Naming**: Integrated Rust Cargo `[[bin]]` configuration and post-build script ensuring final binary in `src-tauri/target/release/` is named `Outil-Update-OPEQ_v{version}.exe`.
+* **Automated Executable Naming**: Integrated Rust Cargo `[[bin]]` configuration and post-build script ensuring final binary in `src-tauri/target/release/` is named `Hardware-Diagnostic-Tool_v{version}.exe`.
 
 ---
 
@@ -611,15 +666,15 @@ This file keeps track of all major changes made to the **OPEQ Update & Diagnosti
   * 4 key stages: *Folder Check*, *OEM Analysis*, *DISM Extraction*, and *NAS Indexing*.
   * Post-success summary card with direct button to open exported folder in Windows Explorer (`explorer.exe`).
 * **Header Resizing and Alignment (`Dashboard.tsx` & `BrightnessControl.tsx`)**:
-  * Height aligned to **40 px (`h-10`)**, matching OPEQ logo dimensions.
+  * Height aligned to **40 px (`h-10`)**, matching header brand dimensions.
   * Enlarged brightness sliders and presets (25%, 50%, 75%, MAX).
   * Expanded zoom buttons (`A-`, `100%`, `A+`) for mouse and touch accessibility.
 * **Project Maintenance**:
-  * Removed legacy scripts (`Lancer-Admin.bat`, `Lancer-Reseau-OPEQ.bat`, `Optimisation possible.md`).
+  * Removed legacy scripts (`Lancer-Admin.bat`, `Lancer-Reseau.bat`, `Optimisation possible.md`).
 
 ---
 
-## [2026-08-25] - Version 1.2.0: Complete Overhaul of OPEQ NAS Driver Management
+## [2026-08-25] - Version 1.2.0: Complete Overhaul of NAS Driver Management
 
 ### 🚀 Major Improvements & Features
 * **Overhauled NAS/Network Driver Search & Matching (`NasDriversModal.tsx`)**:
@@ -709,4 +764,4 @@ This file keeps track of all major changes made to the **OPEQ Update & Diagnosti
   * Compilation fixes, strict typing, and cleaned imports.
 * **Cleanup & Branding**:
   * Removed legacy Windows 11 script configuration (`win11ScriptPath`).
-  * Integrated Base64 OPEQ logo in `src/assets/logoBase64.ts` for standalone offline distribution.
+  * Integrated embedded offline assets for standalone distribution.

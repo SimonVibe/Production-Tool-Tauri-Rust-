@@ -1,6 +1,6 @@
 {
   "name": "CFS Outil Update (Tauri+Rust) Optimisé",
-  "description": "Interface utilitaire OPEQ pour tests et configuration matérielle.",
+  "description": "Hardware diagnostic and configuration utility for workshops and system maintenance.",
   "requestFramePermissions": [
     "camera",
     "microphone"

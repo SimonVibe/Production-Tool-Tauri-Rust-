@@ -11,7 +11,6 @@ import DebugLogViewer from './DebugLogViewer';
 import BrightnessControl from './BrightnessControl';
 import { hardwareAPI, isTauri, formatBatteryDuration } from '../lib/tauriAdapter';
 import { useBatteryMonitor } from '../hooks/useBatteryMonitor';
-import { logoBase64 } from '../assets/logoBase64';
 import { PreFlightSafetyBanner } from './drivers/PreFlightSafetyBanner';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -91,7 +90,7 @@ export default function Dashboard({
 
   const [biosAutoReboot, setBiosAutoReboot] = useState<boolean>(() => {
     try {
-      const saved = localStorage.getItem('opeq-bios-autoreboot');
+      const saved = localStorage.getItem('app-bios-autoreboot') || localStorage.getItem('opeq-bios-autoreboot');
       return saved !== null ? JSON.parse(saved) : (config.autoReboot || false);
     } catch {
       return config.autoReboot || false;
@@ -101,7 +100,7 @@ export default function Dashboard({
   const handleToggleBiosAutoReboot = (checked: boolean) => {
     setBiosAutoReboot(checked);
     try {
-      localStorage.setItem('opeq-bios-autoreboot', JSON.stringify(checked));
+      localStorage.setItem('app-bios-autoreboot', JSON.stringify(checked));
     } catch {}
   };
 
@@ -473,17 +472,21 @@ export default function Dashboard({
       
       {/* HEADER COMPACT ET FLUIDE */}
       <header className="bg-zinc-900/90 border-b border-zinc-800/80 px-6 py-2 flex items-center justify-between shrink-0 backdrop-blur-md sticky top-0 z-30">
-        {/* Logo OPEQ */}
-        <div className="flex items-center space-x-3.5 shrink-0">
-          <img 
-            src="/OPEQ_logo-bleu.svg" 
-            onError={(e) => { (e.currentTarget as HTMLImageElement).src = logoBase64; }}
-            alt="OPEQ Logo" 
-            className="h-10 w-auto object-contain drop-shadow-sm" 
-          />
+        {/* Hardware Diagnostic Suite Brand */}
+        <div className="flex items-center space-x-3 shrink-0">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
+            <Cpu size={22} className="stroke-[2.2]" />
+          </div>
+          <div className="hidden md:flex flex-col">
+            <div className="flex items-center space-x-1.5">
+              <span className="text-sm font-bold text-zinc-100 tracking-tight">Hardware Diagnostic & Update Tool</span>
+              <span className="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 border border-zinc-700/60">v1.2.44</span>
+            </div>
+            <span className="text-[10px] text-zinc-400 font-medium">{language === 'en' ? 'Diagnostics, Drivers & Configuration Suite' : 'Suite de Diagnostic, Pilotes & Configuration'}</span>
+          </div>
         </div>
 
-        {/* Contrôle de Luminosité & Zoom (DPI) proportionnés à la hauteur du logo OPEQ */}
+        {/* Contrôle de Luminosité & Zoom (DPI) */}
         <div className="flex items-center space-x-2.5 flex-1 max-w-2xl justify-center px-2">
           <BrightnessControl 
             value={brightness} 
@@ -497,7 +500,7 @@ export default function Dashboard({
               onClick={() => {
                 setZoomLevel(z => {
                   const val = Math.max(0.6, Number(z) - 0.05);
-                  localStorage.setItem('opeq-zoom-manual', val.toString());
+                  localStorage.setItem('app-zoom-manual', val.toString());
                   return val;
                 });
               }}
@@ -509,6 +512,7 @@ export default function Dashboard({
             <button
               id="zoom-reset-btn"
               onClick={() => {
+                localStorage.removeItem('app-zoom-manual');
                 localStorage.removeItem('opeq-zoom-manual');
                 window.dispatchEvent(new Event('resize'));
               }}
@@ -522,7 +526,7 @@ export default function Dashboard({
               onClick={() => {
                 setZoomLevel(z => {
                   const val = Math.min(1.5, Number(z) + 0.05);
-                  localStorage.setItem('opeq-zoom-manual', val.toString());
+                  localStorage.setItem('app-zoom-manual', val.toString());
                   return val;
                 });
               }}
@@ -548,7 +552,7 @@ export default function Dashboard({
             <span>{t('header.config')}</span>
           </button>
 
-          {/* Guide & Aide OPEQ (?) à l'extrême droite */}
+          {/* Guide & Manuel (?) à l'extrême droite */}
           <button
             id="header-help-btn"
             onClick={() => {
@@ -1394,8 +1398,6 @@ export default function Dashboard({
         <BatteryHealthModal
           isOpen={showBatteryModal}
           onClose={() => setShowBatteryModal(false)}
-          config={config}
-          onExecuteExternal={onExecute}
           battery={batteryStatus}
           onRefreshBattery={refreshBattery}
           isUpdating={isBatteryUpdating}
