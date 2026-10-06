@@ -137,7 +137,7 @@ export default function Dashboard({
   const handleRefreshAll = async () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
-    showToastNotification('Actualisation des spécifications...', 'info');
+    showToastNotification(t('specs.refreshing'), 'info');
     try {
       if (onRefresh) {
         await onRefresh();
@@ -147,9 +147,9 @@ export default function Dashboard({
         refreshBattery().catch(() => null),
       ]);
       setMissingDriversCount(drivers);
-      showToastNotification('Spécifications actualisées avec succès', 'success');
+      showToastNotification(t('specs.refreshed'), 'success');
     } catch {
-      showToastNotification('Erreur lors de l\'actualisation', 'warning');
+      showToastNotification(t('specs.refresh_error'), 'warning');
     } finally {
       setIsRefreshing(false);
     }
@@ -195,7 +195,7 @@ export default function Dashboard({
       if (e.key === 'F5' || key === 'f5' || key === 'r') {
         e.preventDefault();
         handleRefreshAll();
-        showToastNotification('🔄 Raccourci [F5/R] : Actualisation du Matériel & Télémétrie', 'info');
+        showToastNotification(`🔄 ${language === 'en' ? 'Shortcut [F5/R]: Refreshing hardware & telemetry' : 'Raccourci [F5/R] : Actualisation du matériel & télémétrie'}`, 'info');
       } else if (key === 'h' || key === 'f1') {
         e.preventDefault();
         setHelpTab('workflow');
@@ -251,7 +251,7 @@ export default function Dashboard({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [config, showHelpModal, showDriversModal, showWuModal, showNasModal, showBiosModal, showCameraMicModal, showScreenTestModal, showBatteryModal, confirmAction, isRefreshing, showLogsModal]);
+  }, [config, showHelpModal, showDriversModal, showWuModal, showNasModal, showBiosModal, showCameraMicModal, showScreenTestModal, showBatteryModal, confirmAction, isRefreshing, showLogsModal, language]);
 
   const copyToClipboard = (label: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -1531,5 +1531,3 @@ function TestActionButton({ icon, title, subtitle, shortcutKey, onClick }: {
     </button>
   );
 }
-
-

@@ -74,6 +74,9 @@ export const translations: Record<string, { fr: string; en: string }> = {
   // Hardware Specs
   'specs.detected_specs': { fr: 'Spécifications Détectées', en: 'Detected Hardware Specs' },
   'specs.refresh_tooltip': { fr: 'Actualiser les spécifications (R)', en: 'Refresh hardware specifications (R)' },
+  'specs.refreshing': { fr: 'Actualisation des spécifications...', en: 'Refreshing specifications...' },
+  'specs.refreshed': { fr: 'Spécifications actualisées avec succès', en: 'Specifications refreshed successfully' },
+  'specs.refresh_error': { fr: 'Erreur lors de l’actualisation', en: 'Error while refreshing specifications' },
   'specs.model': { fr: 'Modèle', en: 'Model' },
   'specs.serial_number': { fr: 'Numéro de série', en: 'Serial Number' },
   'specs.uuid': { fr: 'Identifiant UUID', en: 'UUID Identifier' },
