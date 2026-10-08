@@ -1155,6 +1155,13 @@ ${autoReboot ? '4. Redémarrage automatique programmé.' : '4. Aucun redémarrag
         let estCharge: number | null = null;
         let estFormatted: string | null = null;
 
+        let currentLang = 'en';
+        try {
+          const s = sessionStorage.getItem('app_session_lang') || localStorage.getItem('app_language');
+          if (s === 'en' || s === 'fr') currentLang = s;
+        } catch {}
+        const isEn = currentLang === 'en';
+
         if (isCharging) {
           if (b.chargingTime && isFinite(b.chargingTime) && b.chargingTime > 0) {
             estCharge = Math.round(b.chargingTime / 60);
@@ -1164,7 +1171,9 @@ ${autoReboot ? '4. Redémarrage automatique programmé.' : '4. Aucun redémarrag
           if (estCharge !== null) {
             const h = Math.floor(estCharge / 60);
             const m = estCharge % 60;
-            estFormatted = h > 0 ? `~${h} h ${m} min (pleine charge)` : `~${m} min (pleine charge)`;
+            estFormatted = isEn
+              ? (h > 0 ? `~${h} h ${m} min (full charge)` : `~${m} min (full charge)`)
+              : (h > 0 ? `~${h} h ${m} min (pleine charge)` : `~${m} min (pleine charge)`);
           }
         } else {
           if (b.dischargingTime && isFinite(b.dischargingTime) && b.dischargingTime > 0) {
@@ -1176,16 +1185,11 @@ ${autoReboot ? '4. Redémarrage automatique programmé.' : '4. Aucun redémarrag
           if (estRun !== null) {
             const h = Math.floor(estRun / 60);
             const m = estRun % 60;
-            estFormatted = h > 0 ? `~${h} h ${m} min restantes` : `~${m} min restantes`;
+            estFormatted = isEn
+              ? (h > 0 ? `~${h} h ${m} min remaining` : `~${m} min remaining`)
+              : (h > 0 ? `~${h} h ${m} min restantes` : `~${m} min restantes`);
           }
         }
-
-        let currentLang = 'en';
-        try {
-          const s = sessionStorage.getItem('app_session_lang') || sessionStorage.getItem('opeq_session_lang');
-          if (s === 'en' || s === 'fr') currentLang = s;
-        } catch {}
-        const isEn = currentLang === 'en';
 
         return {
           present: true,

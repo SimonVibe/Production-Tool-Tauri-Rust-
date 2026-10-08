@@ -31,7 +31,7 @@ const calculateIdealZoom = () => {
 };
 
 export default function App() {
-  const { setLanguage, t } = useLanguage();
+  const { setLanguage, language, t } = useLanguage();
   const [currentView, setCurrentView] = useState<'dashboard' | 'config'>('dashboard');
   const [config, setConfig] = useState<AppConfig>(defaultConfig);
   const [brightness, setBrightness] = useState(100);
@@ -145,7 +145,8 @@ export default function App() {
 
           try {
             const hasSessionLang = sessionStorage.getItem('app_session_lang');
-            if (!hasSessionLang && loadedConfig.defaultLanguage) {
+            const hasLocalLang = localStorage.getItem('app_language');
+            if (!hasSessionLang && !hasLocalLang && loadedConfig.defaultLanguage) {
               setLanguage(loadedConfig.defaultLanguage);
             }
           } catch {}
@@ -157,11 +158,12 @@ export default function App() {
           hardwareAPI.connectNetwork(netPath, netUser, netPass)
             .then(result => {
               if (!isMounted) return;
+              const isEn = (loadedConfig.defaultLanguage || language) === 'en';
               if (result.success) {
                 setIsNetworkConnected(true);
-                setDebugLogs(prev => [`[${new Date().toLocaleTimeString()}] Réseau auto-connecté (${netPath})`, ...prev].slice(0, 50));
+                setDebugLogs(prev => [`[${new Date().toLocaleTimeString()}] ${isEn ? `Network auto-connected (${netPath})` : `Réseau auto-connecté (${netPath})`}`, ...prev].slice(0, 50));
               } else {
-                setDebugLogs(prev => [`[${new Date().toLocaleTimeString()}] Détection réseau: ${result.message}`, ...prev].slice(0, 50));
+                setDebugLogs(prev => [`[${new Date().toLocaleTimeString()}] ${isEn ? `Network detection: ${result.message}` : `Détection réseau: ${result.message}`}`, ...prev].slice(0, 50));
               }
             })
             .catch(e => {
@@ -191,14 +193,16 @@ export default function App() {
     if (newConfig.defaultLanguage) {
       setLanguage(newConfig.defaultLanguage);
     }
+    const isEn = (newConfig.defaultLanguage || language) === 'en';
     const timestamp = new Date().toLocaleTimeString();
-    setDebugLogs(prev => [`[${timestamp}] Configuration sauvegardée avec succès`, ...prev].slice(0, 50));
+    setDebugLogs(prev => [`[${timestamp}] ${isEn ? 'Configuration saved successfully' : 'Configuration sauvegardée avec succès'}`, ...prev].slice(0, 50));
     setCurrentView('dashboard');
   };
 
   const handleRefresh = async () => {
     const timestamp = new Date().toLocaleTimeString();
-    setDebugLogs(prev => [`[${timestamp}] Actualisation forcée du matériel et de la sécurité...`, ...prev].slice(0, 50));
+    const isEn = language === 'en';
+    setDebugLogs(prev => [`[${timestamp}] ${isEn ? 'Forced hardware and security refresh...' : 'Actualisation forcée du matériel et de la sécurité...'}`, ...prev].slice(0, 50));
     try {
       const [newInfo, newSec] = await Promise.all([
         hardwareAPI.getSysInfo(true),
@@ -206,9 +210,9 @@ export default function App() {
       ]);
       if (newInfo) setSysInfo(newInfo);
       if (newSec) setSecurityStatus(newSec);
-      setDebugLogs(prev => [`[${new Date().toLocaleTimeString()}] Spécifications et sécurité actualisées avec succès`, ...prev].slice(0, 50));
+      setDebugLogs(prev => [`[${new Date().toLocaleTimeString()}] ${isEn ? 'Specifications and security successfully refreshed' : 'Spécifications et sécurité actualisées avec succès'}`, ...prev].slice(0, 50));
     } catch (err: any) {
-      setDebugLogs(prev => [`[${new Date().toLocaleTimeString()}] Erreur lors de l'actualisation: ${err.message || 'Erreur inconnue'}`, ...prev].slice(0, 50));
+      setDebugLogs(prev => [`[${new Date().toLocaleTimeString()}] ${isEn ? 'Error during refresh: ' : "Erreur lors de l'actualisation: "}${err.message || (isEn ? 'Unknown error' : 'Erreur inconnue')}`, ...prev].slice(0, 50));
     }
   };
 
@@ -217,7 +221,8 @@ export default function App() {
       const newSec = await hardwareAPI.checkSecurityStatus(true);
       if (newSec) {
         setSecurityStatus(newSec);
-        setDebugLogs(prev => [`[${new Date().toLocaleTimeString()}] Sécurité matérielle actualisée (TPM: ${newSec.tpm ? 'Oui' : 'Non'}, Secure Boot: ${newSec.secureBoot ? 'Actif' : 'Inactif'}, UEFI: ${newSec.isUefi ? 'Oui' : 'Non'})`, ...prev].slice(0, 50));
+        const isEn = language === 'en';
+        setDebugLogs(prev => [`[${new Date().toLocaleTimeString()}] ${isEn ? `Hardware security refreshed (TPM: ${newSec.tpm ? 'Yes' : 'No'}, Secure Boot: ${newSec.secureBoot ? 'Active' : 'Inactive'}, UEFI: ${newSec.isUefi ? 'Yes' : 'No'})` : `Sécurité matérielle actualisée (TPM: ${newSec.tpm ? 'Oui' : 'Non'}, Secure Boot: ${newSec.secureBoot ? 'Actif' : 'Inactif'}, UEFI: ${newSec.isUefi ? 'Oui' : 'Non'})`}`, ...prev].slice(0, 50));
       }
       return newSec;
     } catch (err: any) {

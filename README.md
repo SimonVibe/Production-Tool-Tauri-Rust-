@@ -1,4 +1,4 @@
-# Production-Tool — Hardware Diagnostic & Configuration Suite
+# Production Tool — Hardware Diagnostic & Configuration Suite
 
 [![Tauri v2](https://img.shields.io/badge/Tauri-v2-blue.svg?logo=tauri)](https://tauri.app/)
 [![Rust](https://img.shields.io/badge/Rust-1.75+-orange.svg?logo=rust)](https://www.rust-lang.org/)

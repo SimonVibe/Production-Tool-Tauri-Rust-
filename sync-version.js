@@ -34,13 +34,13 @@ try {
   const tauriConfPath = 'src-tauri/tauri.conf.json';
   const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, 'utf-8'));
   tauriConf.version = version;
-  tauriConf.productName = 'Production-Tool';
+  tauriConf.productName = 'Production Tool';
   if (tauriConf.app && tauriConf.app.windows && tauriConf.app.windows[0]) {
-    tauriConf.app.windows[0].title = `Production-Tool v${version}`;
+    tauriConf.app.windows[0].title = `Production Tool v${version}`;
   }
   delete tauriConf.mainBinaryName;
   fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2) + '\n');
-  console.log(`  [+] tauri.conf.json updated (product: Production-Tool, title: Production-Tool v${version})`);
+  console.log(`  [+] tauri.conf.json updated (product: Production Tool, title: Production Tool v${version})`);
 } catch (e) {
   console.error(`  [-] Error updating tauri.conf.json:`, e.message);
 }

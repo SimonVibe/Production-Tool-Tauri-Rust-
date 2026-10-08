@@ -13,7 +13,7 @@ import { hardwareAPI, isTauri, formatBatteryDuration } from '../lib/tauriAdapter
 import { useBatteryMonitor } from '../hooks/useBatteryMonitor';
 import { PreFlightSafetyBanner } from './drivers/PreFlightSafetyBanner';
 import LanguageSwitcher from './LanguageSwitcher';
-import { useLanguage } from '../i18n/LanguageContext';
+import { useLanguage, translations } from '../i18n/LanguageContext';
 
 const HelpModal = lazy(() => import('./HelpModal'));
 const DriversModal = lazy(() => import('./DriversModal'));
@@ -72,7 +72,11 @@ export default function Dashboard({
   const [isAdmin, setIsAdmin] = useState<boolean>(true);
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ message: string; type?: 'info' | 'success' | 'warning' } | null>(null);
+  const [toast, setToast] = useState<{ 
+    keyOrMessage: string; 
+    type?: 'info' | 'success' | 'warning';
+    params?: Record<string, string | number>;
+  } | null>(null);
   const [helpTab, setHelpTab] = useState<'workflow' | 'drivers' | 'bios' | 'tests' | 'network' | 'shortcuts' | 'faq'>('workflow');
 
   // Modals state
@@ -104,11 +108,30 @@ export default function Dashboard({
     } catch {}
   };
 
-  const showToastNotification = (message: string, type: 'info' | 'success' | 'warning' = 'success') => {
-    setToast({ message, type });
+  const showToastNotification = (
+    keyOrMessage: string, 
+    type: 'info' | 'success' | 'warning' = 'success',
+    params?: Record<string, string | number>
+  ) => {
+    setToast({ keyOrMessage, type, params });
     setTimeout(() => {
-      setToast(prev => (prev?.message === message ? null : prev));
+      setToast(prev => (prev?.keyOrMessage === keyOrMessage ? null : prev));
     }, 2200);
+  };
+
+  const resolveToastMessage = (keyOrMsg: string, params?: Record<string, string | number>): string => {
+    if (translations[keyOrMsg]) {
+      return t(keyOrMsg, undefined, params);
+    }
+    // If a French message string was passed, dynamically map to English when active language is English
+    if (language === 'en') {
+      for (const [k, v] of Object.entries(translations)) {
+        if (v.fr === keyOrMsg) {
+          return t(k, v.en, params);
+        }
+      }
+    }
+    return keyOrMsg;
   };
 
   useEffect(() => {
@@ -137,7 +160,7 @@ export default function Dashboard({
   const handleRefreshAll = async () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
-    showToastNotification('Actualisation des spécifications...', 'info');
+    showToastNotification('toast.refreshing', 'info');
     try {
       if (onRefresh) {
         await onRefresh();
@@ -147,9 +170,9 @@ export default function Dashboard({
         refreshBattery().catch(() => null),
       ]);
       setMissingDriversCount(drivers);
-      showToastNotification('Spécifications actualisées avec succès', 'success');
+      showToastNotification('toast.refreshed_success', 'success');
     } catch {
-      showToastNotification('Erreur lors de l\'actualisation', 'warning');
+      showToastNotification('toast.refresh_error', 'warning');
     } finally {
       setIsRefreshing(false);
     }
@@ -195,7 +218,6 @@ export default function Dashboard({
       if (e.key === 'F5' || key === 'f5' || key === 'r') {
         e.preventDefault();
         handleRefreshAll();
-        showToastNotification('🔄 Raccourci [F5/R] : Actualisation du Matériel & Télémétrie', 'info');
       } else if (key === 'h' || key === 'f1') {
         e.preventDefault();
         setHelpTab('workflow');
@@ -203,45 +225,42 @@ export default function Dashboard({
       } else if (key === 'e') {
         e.preventDefault();
         setShowScreenTestModal(true);
-        showToastNotification('🖥️ Raccourci [E] : Test Écran', 'info');
+        showToastNotification('shortcut.screen', 'info');
       } else if (key === 'c') {
         e.preventDefault();
         setShowCameraMicModal(true);
-        showToastNotification('📷 Raccourci [C] : Test Caméra & Micro', 'info');
+        showToastNotification('shortcut.camera_mic', 'info');
       } else if (key === 'k') {
         e.preventDefault();
         onExecute('Test Clavier', config.testClavierPath);
-        showToastNotification('⌨️ Raccourci [K] : Lancement AquaKeyTest', 'info');
+        showToastNotification('shortcut.keyboard', 'info');
       } else if (key === 's') {
         e.preventDefault();
         onExecute('Test de son', config.testSonPath);
-        showToastNotification('🔊 Raccourci [S] : Test Audio Windows', 'info');
+        showToastNotification('shortcut.sound', 'info');
       } else if (key === 'b') {
         e.preventDefault();
         setShowBatteryModal(true);
-        showToastNotification('🔋 Raccourci [B] : Diagnostic Santé Batterie', 'info');
+        showToastNotification('shortcut.battery', 'info');
       } else if (key === 't') {
         e.preventDefault();
         onExecute('BurnIn test', config.burnInTestPath);
-        showToastNotification('🔥 Raccourci [T] : BurnIn Stress Test', 'info');
+        showToastNotification('shortcut.stress', 'info');
       } else if (key === 'f') {
         e.preventDefault();
         setShowBiosModal(true);
-        showToastNotification('⚡ Raccourci [F] : Gestionnaire Firmware BIOS', 'info');
+        showToastNotification('shortcut.bios', 'info');
       } else if (key === 'p') {
         e.preventDefault();
         setShowDriversModal(true);
-        showToastNotification('🔧 Raccourci [P] : Gestionnaire de Pilotes', 'info');
+        showToastNotification('shortcut.drivers', 'info');
       } else if (key === 'l') {
         e.preventDefault();
         setShowLogsModal(prev => {
           const next = !prev;
-          showToastNotification(next ? 'Fenêtre des logs ouverte' : 'Fenêtre des logs fermée', 'info');
+          showToastNotification(next ? 'shortcut.logs_open' : 'shortcut.logs_close', 'info');
           return next;
         });
-      } else if (key === 'r') {
-        e.preventDefault();
-        handleRefreshAll();
       } else if (key === '?' || (e.shiftKey && key === '/')) {
         e.preventDefault();
         setHelpTab('shortcuts');
@@ -251,12 +270,12 @@ export default function Dashboard({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [config, showHelpModal, showDriversModal, showWuModal, showNasModal, showBiosModal, showCameraMicModal, showScreenTestModal, showBatteryModal, confirmAction, isRefreshing, showLogsModal]);
+  }, [config, showHelpModal, showDriversModal, showWuModal, showNasModal, showBiosModal, showCameraMicModal, showScreenTestModal, showBatteryModal, confirmAction, isRefreshing, showLogsModal, t]);
 
   const copyToClipboard = (label: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedKey(label);
-    showToastNotification(`✓ ${label} copié dans le presse-papiers`, 'success');
+    showToastNotification(`✓ ${label} ${t('toast.copied')}`, 'success');
     setTimeout(() => setCopiedKey(null), 1500);
   };
 
@@ -493,8 +512,8 @@ export default function Dashboard({
           </div>
           <div className="hidden md:flex flex-col">
             <div className="flex items-center space-x-1.5">
-              <span className="text-sm font-bold text-zinc-100 tracking-tight">Hardware Diagnostic & Update Tool</span>
-              <span className="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 border border-zinc-700/60">v1.2.48</span>
+              <span className="text-sm font-bold text-zinc-100 tracking-tight">Production Tool</span>
+              <span className="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 border border-zinc-700/60">v1.2.51</span>
             </div>
             <span className="text-[10px] text-zinc-400 font-medium">{language === 'en' ? 'Diagnostics, Drivers & Configuration Suite' : 'Suite de Diagnostic, Pilotes & Configuration'}</span>
           </div>
@@ -593,7 +612,7 @@ export default function Dashboard({
             batteryStatus={batteryStatus}
             onRestartAsAdmin={() => {
               hardwareAPI.restartAsAdmin().catch(err => {
-                showToastNotification(`Échec de la relance en administrateur : ${err}`, 'warning');
+                showToastNotification(`${t('toast.admin_error')} : ${err}`, 'warning');
               });
             }}
           />
@@ -803,10 +822,10 @@ export default function Dashboard({
                       }`}
                       title={
                         securityStatus.isUefi === null || securityStatus.isUefi === undefined
-                          ? "Vérification du mode de partition..."
+                          ? t('specs.partition_checking', 'Checking partition mode...')
                           : securityStatus.isUefi 
-                          ? "Système installé en mode UEFI (Moderne)" 
-                          : "Système installé en mode Hérité (Legacy/MBR)"
+                          ? t('specs.partition_uefi', 'System installed in UEFI mode (Modern)') 
+                          : t('specs.partition_legacy', 'System installed in Legacy mode (Legacy/MBR)')
                       }
                     >
                       <span>
@@ -881,7 +900,7 @@ export default function Dashboard({
                                 setTimeout(() => setCopiedKey(null), 1500);
                               }}
                               className="text-zinc-500 hover:text-emerald-400 p-0.5 rounded cursor-pointer transition-colors"
-                              title={`Copier S/N: ${sn}`}
+                              title={language === 'en' ? `Copy S/N: ${sn}` : `Copier S/N : ${sn}`}
                             >
                               {isThisCopied ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
                             </button>
@@ -1134,7 +1153,7 @@ export default function Dashboard({
                         {batteryStatus?.present !== false && (
                           <span 
                             className="text-[8px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-1 py-0.2 rounded flex items-center gap-0.5"
-                            title={`Moyenne mobile calculée sur les 5 dernières secondes (${batterySampleCount} mesures)`}
+                            title={t('battery.moving_avg_tooltip', `Moving average calculated over the last 5 seconds (${batterySampleCount} samples)`, { count: batterySampleCount })}
                           >
                             <span className={`inline-block w-1 h-1 rounded-full bg-emerald-400 ${isBatteryUpdating ? 'animate-ping' : ''}`} />
                             <span>{t('battery.avg_5s')}</span>
@@ -1268,7 +1287,7 @@ export default function Dashboard({
               : 'bg-zinc-900/95 border-emerald-500/60 text-emerald-200'
           }`}>
             <Sparkles size={14} className="text-emerald-400 shrink-0" />
-            <span>{toast.message}</span>
+            <span>{resolveToastMessage(toast.keyOrMessage, toast.params)}</span>
           </div>
         </div>
       )}

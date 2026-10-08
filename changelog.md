@@ -4,6 +4,48 @@ This file keeps track of all major changes made to the **Hardware Diagnostic & U
 
 ---
 
+## [2026-10-07] - Version 1.2.51: Complete Localization of Hardware Spec Refresh Popups, Toasts & Tooltips
+
+### [Fixed]
+* **Hardware Specification Refresh Popups & Toasts (`src/components/Dashboard.tsx`)**:
+  * Refactored floating toast notification state to store translation keys and dynamic parameter payloads instead of pre-rendered text strings.
+  * Added `resolveToastMessage` with live active-language translation and automatic reverse-lookup for French strings when English is active, guaranteeing the popup toast never displays in French when the app is set to English.
+  * Updated `handleRefreshAll` to pass `'toast.refreshing'`, `'toast.refreshed_success'`, and `'toast.refresh_error'` directly to the toast system.
+  * Standardized keyboard shortcut toasts (`F5`, `R`, `E`, `C`, `K`, `S`, `B`, `T`, `F`, `P`, `L`) to use direct translation keys with zero collision.
+* **Hardware Specification Hover Tooltips (`src/components/Dashboard.tsx`, `src/i18n/LanguageContext.tsx`)**:
+  * Localized the partition mode / UEFI status badge tooltip (`specs.partition_checking`, `specs.partition_uefi`, `specs.partition_legacy`) which previously showed hardcoded French on hover.
+  * Localized the disk serial number copy tooltip button (`Copy S/N: {sn}` in English, `Copier S/N : {sn}` in French).
+  * Localized the 5-second moving average battery telemetry tooltip (`battery.moving_avg_tooltip`).
+* **Language Persistence & Refresh Logs (`src/App.tsx`, `src/i18n/LanguageContext.tsx`, `src/lib/tauriAdapter.ts`)**:
+  * Added `app_language` persistent key in `localStorage` in addition to `sessionStorage` so technician language selection is reliably preserved.
+  * Localized system debug logs generated during forced hardware and security refreshes, security status checks, and network auto-connect.
+  * Localized battery duration estimates in web and Tauri adapter simulations (`remaining` / `restantes`, `full charge` / `pleine charge`).
+
+---
+
+## [2026-10-07] - Version 1.2.50: Application Renaming to Production Tool
+
+### [Changed]
+* **Application Branding & Display Name (`Production Tool`)**:
+  * Updated application header title to **Production Tool** in `src/components/Dashboard.tsx`.
+  * Updated web entry title and OpenGraph metadata in `index.html`.
+  * Updated desktop product name and window title in `src-tauri/tauri.conf.json` and `sync-version.js`.
+  * Updated compilation script headers, titles, and terminal notices in `run.bat` and `post-build.js`.
+  * Harmonized documentation across `README.md` and `USER_GUIDE.md`.
+
+---
+
+## [2026-10-06] - Version 1.2.49: Compilation Requirements & Toolchain Streamlining
+
+### [Changed]
+* **Cleaned and Streamlined Dependencies (`package.json`)**:
+  * Cleaned duplicate dependency declarations across `dependencies` and `devDependencies` (consolidated `vite` in `devDependencies`).
+* **Enhanced Toolchain Verification (`run.bat`)**:
+  * Streamlined automated prerequisite verification for Node.js LTS, Rust/Cargo (`x86_64-pc-windows-msvc`), and Visual Studio C++ Build Tools (MSVC).
+  * Added automated detection and winget resolution for MSVC C++ toolchain requirements.
+
+---
+
 ## [2026-10-06] - Version 1.2.48: Complete Localization of Loading States
 
 ### [Fixed]

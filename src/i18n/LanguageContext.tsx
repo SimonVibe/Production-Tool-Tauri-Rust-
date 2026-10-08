@@ -96,6 +96,28 @@ export const translations: Record<string, { fr: string; en: string }> = {
   'specs.smart_loading': { fr: 'SMART...', en: 'SMART...' },
   'specs.smart_loading_tooltip': { fr: 'Vérification de l\'état S.M.A.R.T. en cours...', en: 'Checking S.M.A.R.T. health status...' },
   'specs.copy_spec': { fr: 'Copier', en: 'Copy' },
+  'specs.partition_checking': { fr: 'Vérification du mode de partition...', en: 'Checking partition mode...' },
+  'specs.partition_uefi': { fr: 'Système installé en mode UEFI (Moderne)', en: 'System installed in UEFI mode (Modern)' },
+  'specs.partition_legacy': { fr: 'Système installé en mode Hérité (Legacy/MBR)', en: 'System installed in Legacy mode (Legacy/MBR)' },
+  'battery.moving_avg_tooltip': { fr: 'Moyenne mobile calculée sur les 5 dernières secondes ({count} mesures)', en: 'Moving average calculated over the last 5 seconds ({count} samples)' },
+
+  // Toast Notifications & Shortcuts
+  'toast.refreshing': { fr: 'Actualisation des spécifications...', en: 'Refreshing hardware specifications...' },
+  'toast.refreshed_success': { fr: 'Spécifications actualisées avec succès', en: 'Hardware specifications refreshed successfully' },
+  'toast.refresh_error': { fr: 'Erreur lors de l\'actualisation', en: 'Error refreshing specifications' },
+  'toast.copied': { fr: 'copié dans le presse-papiers', en: 'copied to clipboard' },
+  'toast.admin_error': { fr: 'Échec de la relance en administrateur', en: 'Failed to relaunch as administrator' },
+  'shortcut.refresh': { fr: '🔄 Raccourci [F5/R] : Actualisation du Matériel & Télémétrie', en: '🔄 Shortcut [F5/R]: Refreshing Hardware & Telemetry' },
+  'shortcut.screen': { fr: '🖥️ Raccourci [E] : Test Écran', en: '🖥️ Shortcut [E]: Screen Test' },
+  'shortcut.camera_mic': { fr: '📷 Raccourci [C] : Test Caméra & Micro', en: '📷 Shortcut [C]: Camera & Mic Test' },
+  'shortcut.keyboard': { fr: '⌨️ Raccourci [K] : Lancement AquaKeyTest', en: '⌨️ Shortcut [K]: Launching AquaKeyTest' },
+  'shortcut.sound': { fr: '🔊 Raccourci [S] : Test Audio Windows', en: '🔊 Shortcut [S]: Windows Audio Test' },
+  'shortcut.battery': { fr: '🔋 Raccourci [B] : Diagnostic Santé Batterie', en: '🔋 Shortcut [B]: Battery Health Diagnostic' },
+  'shortcut.stress': { fr: '🔥 Raccourci [T] : BurnIn Stress Test', en: '🔥 Shortcut [T]: BurnIn Stress Test' },
+  'shortcut.bios': { fr: '⚡ Raccourci [F] : Gestionnaire Firmware BIOS', en: '⚡ Shortcut [F]: BIOS Firmware Flasher' },
+  'shortcut.drivers': { fr: '🔧 Raccourci [P] : Gestionnaire de Pilotes', en: '🔧 Shortcut [P]: Driver Manager' },
+  'shortcut.logs_open': { fr: 'Fenêtre des logs ouverte', en: 'Event log drawer opened' },
+  'shortcut.logs_close': { fr: 'Fenêtre des logs fermée', en: 'Event log drawer closed' },
 
   // BIOS and Drivers Buttons
   'actions.bios_update': { fr: 'Mise à jour BIOS', en: 'BIOS Update' },
@@ -464,12 +486,16 @@ const LanguageContext = createContext<LanguageContextType>({
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Default to English ('en') with optional session-level persistence or saved configuration default
+  // Default to English ('en') with priority: sessionStorage > localStorage app_language > localStorage app-tauri-config > default 'en'
   const [language, setLanguageState] = useState<Language>(() => {
     try {
       const sessionLang = sessionStorage.getItem('app_session_lang');
       if (sessionLang === 'fr' || sessionLang === 'en') {
         return sessionLang;
+      }
+      const localLang = localStorage.getItem('app_language');
+      if (localLang === 'fr' || localLang === 'en') {
+        return localLang;
       }
       const savedConfig = localStorage.getItem('app-tauri-config');
       if (savedConfig) {
@@ -486,6 +512,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLanguageState(lang);
     try {
       sessionStorage.setItem('app_session_lang', lang);
+      localStorage.setItem('app_language', lang);
     } catch {}
   };
 

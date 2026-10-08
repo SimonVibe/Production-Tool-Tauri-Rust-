@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
-title Production-Tool (Administrator Mode) - Build & Packaging
+title Production Tool (Administrator Mode) - Build & Packaging
 
 :: =======================================================
 :: 0. Administrator privilege check & auto-elevation
@@ -16,7 +16,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo =======================================================
-echo   Production-Tool - Build & Packaging Pipeline (Tauri v2 + React)
+echo   Production Tool - Build & Packaging Pipeline (Tauri v2 + React)
 echo   Portable Executable & Installer Generator (.exe / .msi)
 echo   [ADMINISTRATOR MODE ACTIVE]
 echo =======================================================
@@ -40,7 +40,7 @@ if %ERRORLEVEL% NEQ 0 (
         winget install OpenJS.NodeJS.LTS -e --silent --accept-source-agreements --accept-package-agreements
         set "PATH=%ProgramFiles%\nodejs;%APPDATA%\npm;!PATH!"
     ) else (
-        echo [ERROR] Node.js is required. Please install it from https://nodejs.org/
+        echo [ERROR] Node.js LTS is required. Please install it from https://nodejs.org/
         pause
         exit /b 1
     )
@@ -74,7 +74,34 @@ if %ERRORLEVEL% NEQ 0 (
 where cargo >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo [WARNING] 'cargo' could not be found in the current PATH.
-    echo If Rust was just installed, please reopen a terminal or verify %%USERPROFILE%%\.cargo\bin.
+    echo If Rust was just installed, please reopen a terminal or check %%USERPROFILE%%\.cargo\bin.
+)
+
+:: 2.3 Check Visual Studio C++ Build Tools (MSVC)
+where cl >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    set "VS_FOUND="
+    if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (
+        for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2^>nul`) do (
+            set "VS_FOUND=%%i"
+        )
+    )
+    if not defined VS_FOUND (
+        if exist "%ProgramFiles%\Microsoft Visual Studio\2022" set "VS_FOUND=1"
+        if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2019" set "VS_FOUND=1"
+        if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2022" set "VS_FOUND=1"
+    )
+    if not defined VS_FOUND (
+        echo [Prerequisites] Visual Studio C++ Build Tools (MSVC) not detected.
+        echo Attempting automatic installation via winget...
+        where winget >nul 2>&1
+        if %ERRORLEVEL% EQU 0 (
+            winget install Microsoft.VisualStudio.2022.BuildTools --override "--passive --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" --accept-source-agreements --accept-package-agreements
+        ) else (
+            echo [NOTE] MSVC C++ Build Tools are recommended for compiling Rust on Windows.
+            echo If build fails, install from: https://visualstudio.microsoft.com/visual-cpp-build-tools/
+        )
+    )
 )
 
 :: =======================================================
@@ -132,7 +159,7 @@ call node post-build.js
 echo.
 if %TAURI_BUILD_CODE% EQU 0 (
     echo =======================================================
-    echo   [SUCCESS] Production-Tool compiled and packaged successfully!
+    echo   [SUCCESS] Production Tool compiled and packaged successfully!
     echo   Deliverables ready in the dist folder:
     echo     1. Portable Application: dist\1_portable\Production-Tool_v..._Portable.exe
     echo     2. Setup Installer (.exe): dist\2_installer\Production-Tool_v..._Installer.exe

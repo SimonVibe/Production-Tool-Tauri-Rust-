@@ -1,6 +1,6 @@
-# Production-Tool — User Guide & Operations Manual
+# Production Tool — User Guide & Operations Manual
 
-Welcome to the **Production-Tool** operational manual. This guide is designed for workshop technicians, IT system administrators, and refurbishment specialists to effectively diagnose hardware, audit Windows 11 readiness, deploy drivers, flash firmware, and run comprehensive component tests.
+Welcome to the **Production Tool** operational manual. This guide is designed for workshop technicians, IT system administrators, and refurbishment specialists to effectively diagnose hardware, audit Windows 11 readiness, deploy drivers, flash firmware, and run comprehensive component tests.
 
 ---
 

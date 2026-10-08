@@ -116,9 +116,11 @@ if (!portableCopied) {
   const potentialLocations = [
     path.join('src-tauri', 'target', 'release', 'production-tool.exe'),
     path.join('src-tauri', 'target', 'release', 'Production-Tool.exe'),
+    path.join('src-tauri', 'target', 'release', 'Production Tool.exe'),
     path.join('src-tauri', 'target', 'release', 'outil-update.exe'),
     path.join('.', `Production-Tool_v${version}_Portable.exe`),
     path.join('.', 'Production-Tool.exe'),
+    path.join('.', 'Production Tool.exe'),
     path.join('.', `Hardware-Diagnostic-Tool_v${version}_Portable.exe`),
   ];
 
