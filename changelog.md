@@ -4,21 +4,11 @@ This file keeps track of all major changes made to the **Hardware Diagnostic & U
 
 ---
 
-## [2026-10-10] - Version 1.2.57: Correction of run.bat Batch Syntax Errors
+## [2026-10-10] - Version 1.2.58: Automatic UI Version Synchronization
 
-### [Fixed]
-* **Build Script (`run.bat`)**:
-  * Removed unescaped ampersand (`&`) characters in echo statements that caused `cmd.exe` syntax errors (`'Packaging' is not recognized`).
-  * Flattened nested condition blocks to prevent `not was unexpected at this time` batch parsing errors.
-
----
-
-## [2026-10-10] - Version 1.2.56: Robustification of run.bat Build Script
-
-### [Fixed]
-* **Build Script (`run.bat`)**:
-  * Upgraded conditional error level evaluations from `%ERRORLEVEL%` to `!ERRORLEVEL!` under `EnableDelayedExpansion` to prevent stale error code parsing in batch loops and condition blocks.
-  * Streamlined Step 7 compilation to leverage `npm run tauri:build` directly.
+### [Changed]
+* **Version Sync Utility (`sync-version.js`)**:
+  * Enhanced `sync-version.js` to automatically update the UI version badge in `src/components/Dashboard.tsx` whenever `changelog.md` version is updated, ensuring the compiled app always reflects the correct version.
 
 ---
 

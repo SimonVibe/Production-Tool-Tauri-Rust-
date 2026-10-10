@@ -1,6 +1,6 @@
 [package]
 name = "production-tool"
-version = "1.2.57"
+version = "1.2.58"
 description = "Production Tool - Hardware diagnostic and configuration utility (Tauri + Rust)"
 authors = ["Hardware Workshop"]
 edition = "2021"

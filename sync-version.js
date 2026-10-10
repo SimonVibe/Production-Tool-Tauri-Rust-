@@ -12,7 +12,7 @@ export function getChangelogVersion() {
   } catch (e) {
     console.warn('[sync-version] Unable to read changelog.md:', e.message);
   }
-  return '1.2.6';
+  return '1.2.58';
 }
 
 const version = getChangelogVersion();
@@ -51,12 +51,24 @@ try {
   let cargo = fs.readFileSync(cargoPath, 'utf-8');
   cargo = cargo.replace(/^name\s*=\s*".*?"/m, `name = "production-tool"`);
   cargo = cargo.replace(/^version\s*=\s*".*?"/m, `version = "${version}"`);
-  // Remove any manual [[bin]] section so Cargo keeps default crate naming without dot errors
   cargo = cargo.replace(/\n\[\[bin\]\][\s\S]*$/m, '').trimEnd() + '\n';
   fs.writeFileSync(cargoPath, cargo);
   console.log(`  [+] Cargo.toml updated (name = "production-tool", version = "${version}")`);
 } catch (e) {
   console.error(`  [-] Error updating Cargo.toml:`, e.message);
+}
+
+// 4. Update Dashboard.tsx header version badge
+try {
+  const dashboardPath = 'src/components/Dashboard.tsx';
+  if (fs.existsSync(dashboardPath)) {
+    let dashboardContent = fs.readFileSync(dashboardPath, 'utf-8');
+    dashboardContent = dashboardContent.replace(/v\d+\.\d+\.\d+/g, `v${version}`);
+    fs.writeFileSync(dashboardPath, dashboardContent);
+    console.log(`  [+] Dashboard.tsx header version updated to v${version}`);
+  }
+} catch (e) {
+  console.error(`  [-] Error updating Dashboard.tsx version:`, e.message);
 }
 
 console.log(`[sync-version] ✅ Synchronization completed.`);
