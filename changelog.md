@@ -4,6 +4,24 @@ This file keeps track of all major changes made to the **Hardware Diagnostic & U
 
 ---
 
+## [2026-10-10] - Version 1.2.57: Correction of run.bat Batch Syntax Errors
+
+### [Fixed]
+* **Build Script (`run.bat`)**:
+  * Removed unescaped ampersand (`&`) characters in echo statements that caused `cmd.exe` syntax errors (`'Packaging' is not recognized`).
+  * Flattened nested condition blocks to prevent `not was unexpected at this time` batch parsing errors.
+
+---
+
+## [2026-10-10] - Version 1.2.56: Robustification of run.bat Build Script
+
+### [Fixed]
+* **Build Script (`run.bat`)**:
+  * Upgraded conditional error level evaluations from `%ERRORLEVEL%` to `!ERRORLEVEL!` under `EnableDelayedExpansion` to prevent stale error code parsing in batch loops and condition blocks.
+  * Streamlined Step 7 compilation to leverage `npm run tauri:build` directly.
+
+---
+
 ## [2026-10-10] - Version 1.2.55: README Configuration Password Documentation
 
 ### [Changed]
