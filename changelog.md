@@ -4,6 +4,38 @@ This file keeps track of all major changes made to the **Hardware Diagnostic & U
 
 ---
 
+## [2026-10-10] - Version 1.2.55: README Configuration Password Documentation
+
+### [Changed]
+* **Documentation (`README.md`)**:
+  * Added a prominent callout under the **Configuration & Network Deployment** section specifying that the default configuration password is **`admin`**.
+
+---
+
+## [2026-10-10] - Version 1.2.54: README GitHub Repository URL Update
+
+### [Changed]
+* **Repository Documentation (`README.md`)**:
+  * Updated clone instructions and GitHub repository URL to `https://github.com/SimonVibe/Production-Tool-Tauri-Rust-.git`.
+
+---
+
+## [2026-10-10] - Version 1.2.53: Public Folder Asset Cleanup
+
+### [Removed]
+* **Unused Public Assets (`/public`)**:
+  * Removed unreferenced assets (`app-logo.png`, `Charlie - Saut.svg`, `charlie-saut.svg`) from the `/public` directory, keeping only the actively used `background.png`.
+
+---
+
+## [2026-10-10] - Version 1.2.52: Cleanup of Unused Temporary Files
+
+### [Removed]
+* **Unused Development & Test Scripts (`/`)**:
+  * Removed unused temporary files and diagnostic test scripts (`replace_script.py`, `replace_this.txt`, `test_batt.ps1`, `test_sec.ps1`, `test_sn.ps1`) to streamline the repository root directory.
+
+---
+
 ## [2026-10-07] - Version 1.2.51: Complete Localization of Hardware Spec Refresh Popups, Toasts & Tooltips
 
 ### [Fixed]

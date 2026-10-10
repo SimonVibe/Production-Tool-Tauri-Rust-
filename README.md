@@ -135,8 +135,8 @@ Ensure you have the following installed:
 Clone the repository and install npm packages:
 
 ```bash
-git clone https://github.com/example/hardware-diagnostic-tool.git
-cd hardware-diagnostic-tool
+git clone https://github.com/SimonVibe/Production-Tool-Tauri-Rust-.git
+cd Production-Tool-Tauri-Rust-
 npm install
 ```
 
@@ -248,6 +248,8 @@ The resulting executables will be compiled and organized by `post-build.js` into
 ---
 
 ## Configuration & Network Deployment
+
+> 🔑 **Default Configuration Password:** The settings panel is protected by default with the password **`admin`** (hashed via SHA-256).
 
 The tool persists settings inside `config.json` (stored alongside the executable in portable mode):
 

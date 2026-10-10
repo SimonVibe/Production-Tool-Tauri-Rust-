@@ -1,1 +1,0 @@
-$p=Get-PhysicalDisk -ErrorAction SilentlyContinue | Where-Object BusType -ne "USB" | Select-Object -ExpandProperty SerialNumber; if($p){ ($p | ForEach-Object {$_.Trim()} | Where-Object {$_ -ne ""}) -join ", " } else { "none" }
